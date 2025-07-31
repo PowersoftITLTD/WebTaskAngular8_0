@@ -38,6 +38,11 @@ import { NoDataFoundComponent } from './components/common/no-data-found/no-data-
 import { ConfirmDialogComponent } from './components/common/confirm-dialog/confirm-dialog.component';
 import { DialogModule } from 'primeng/dialog';
 import { ShortNamePipe } from './pipes/short-name.pipe';
+import { ApprovalTableComponent } from './components/approval-table/approval-table.component';
+import { TableModule } from 'primeng/table';
+import { DropdownModule } from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button';
+
 
 @NgModule({
   declarations: [
@@ -58,6 +63,8 @@ import { ShortNamePipe } from './pipes/short-name.pipe';
     NoDataFoundComponent,
     ConfirmDialogComponent,
     ShortNamePipe,
+    ApprovalTableComponent,
+    
   ],
   imports: [
     CommonModule,
@@ -82,6 +89,11 @@ import { ShortNamePipe } from './pipes/short-name.pipe';
     SliderModule,
     FileUploadModule,
     DialogModule,
+    TableModule,
+    InputTextModule,
+    DropdownModule,
+    ButtonModule
+    
   ],
   exports: [
     TmTabsComponent,
@@ -105,6 +117,11 @@ import { ShortNamePipe } from './pipes/short-name.pipe';
     ConfirmDialogComponent,
     DialogModule,
     ShortNamePipe,
+    ApprovalTableComponent,
+    TableModule,
+    InputTextModule,
+    DropdownModule,
+    ButtonModule
   ],
 })
 export class SharedModule {}

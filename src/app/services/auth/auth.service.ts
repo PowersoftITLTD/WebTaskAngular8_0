@@ -43,8 +43,8 @@ export class AuthService {
   }
 
 
-  getDetails(url:string, body:Object): Observable<any>{
-    url = `${endpointPaths.GetAbbrAndShortAbbr}?Building=${body}&Standard=${body}&Authority=${body}`
+  getDetails( body:Object): Observable<any>{
+    let url = `${endpointPaths.GetAbbrAndShortAbbr}?Building=${body}&Standard=${body}&Authority=${body}`
     return this.http.get(`${environment.apiBaseUrl}${url}`)
   }
 

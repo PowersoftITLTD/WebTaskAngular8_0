@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { cloneDeep } from 'lodash';
 import { MultiSelect } from 'primeng/multiselect';
@@ -7,6 +7,7 @@ import { catchError, forkJoin, Observable, of, take, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { storedDetails } from '../../../store/auth/auth.selectors';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-add-approval',
@@ -25,6 +26,8 @@ export class AddApprovalComponent {
   standard: any = [];
   authority: any = [];
 
+  getRelAbbr: any[] = [];
+
   tagsList: any[] = [];
   selectedTag: any[] = [];
 
@@ -34,8 +37,11 @@ export class AddApprovalComponent {
   tempOutcomeCategories: any = [];
   assignedPeopleList: any[] = [];
 
+  authorityTableData:any[]=[];
+
   private isCheckValueCalled: boolean = false;
 
+   notificationService = inject(NotificationService);
 
   outcomeCategories: any = [];
   outcomeTableData: any = [];
@@ -225,18 +231,48 @@ export class AddApprovalComponent {
   }
 
 
+  addRow() {
+  console.log("Add row clicked");
+
+  const newRow = {
+    abbrivation: null,
+    shorT_DESCRIPTION: null,
+    sanctioN_DEPARTMENT: null,
+    nO_DAYS_REQUIRED: null,
+    authoritY_DEPARTMENT: null,
+    enD_RESULT_DOC: null,
+    subtasK_MKEY: null,
+    subTaskTags: '',
+    sequentialNo: this.authorityTableData.length + 1
+  };
+
+  // IMPORTANT: Use spread operator to trigger change detection
+  this.authorityTableData = [...this.authorityTableData, newRow];
+}
+
+
   // addRow(savedData?: any) {
-  //   const buildingType = this.approvalTempForm.get('building')?.value;
-  //   const buildingStandard = this.approvalTempForm.get('standard')?.value;
-  //   const statutoryAuthority = this.approvalTempForm.get('statutoryAuth')?.value;
+  //   const buildingType = this.projectForm.get('building')?.value;
+  //   const buildingStandard = this.projectForm.get('standard')?.value;
+  //   const statutoryAuthority = this.projectForm.get('authority')?.value;
+
+  
+
+  //   const body = {
+  //     buildingType:this.projectForm.get('building')?.value,
+  //     buildingStandard: this.projectForm.get('standard')?.value,
+  //     statutoryAuthority:this.projectForm.get('authority')?.value,
+  //     Session_User_ID: this.authData?.Session_User_Id,
+  //     Business_Group_ID: this.authData?.Business_Group_Id,
+  //   }
 
   //   if (buildingType && buildingStandard && statutoryAuthority) {
-  //     this.recursiveLogginUser = this.apiService.getRecursiveUser();
+  //    // this.recursiveLogginUser = this.apiService.getRecursiveUser();
 
   //     // API call to fetch abbreviation and other data
-  //     this.apiService.GetAbbrAndShortAbbr(buildingType, buildingStandard, statutoryAuthority, this.recursiveLogginUser).subscribe({
+  //     this.apiService.getDetails(body).subscribe({
   //       next: (gerAbbrRelData) => {
-  //         this.checkValue(gerAbbrRelData); // Call checkValue to process the first time
+  //        // this.checkValue(gerAbbrRelData); // Call checkValue to process the first time
 
   //         // console.log(gerAbbrRelData);
   //         this.getRelAbbr = Array.isArray(gerAbbrRelData) ? gerAbbrRelData : [gerAbbrRelData];
@@ -289,12 +325,74 @@ export class AddApprovalComponent {
   //         }
   //       },
   //       error: (err) => {
-  //         this.tostar.error('Unable to fetch data, please check internet connection');
+  //         this.notificationService.error('Unable to fetch data, please check internet connection');
+  //        // this.tostar.error('Unable to fetch data, please check internet connection');
   //       }
   //     });
   //   } else {
-  //     this.tostar.error('Please select all classification');
+  //     this.notificationService.error('Please select all classification');
+      
   //     return;
+  //   }
+  // }
+
+  removeRow(index: number) {
+  this.authorityTableData.splice(index, 1);
+}
+
+onTableRowChange(event: { rowIndex: number, field: string, value: any }) {
+  const { rowIndex, field, value } = event;
+  this.authorityTableData[rowIndex][field] = value;
+
+  if (field === 'abbreviation') {
+    const selected = this.getRelAbbr.find(item => item.maiN_ABBR === value);
+    if (selected) {
+      this.authorityTableData[rowIndex].shortDescription = selected.shorT_DESCRIPTION;
+      this.authorityTableData[rowIndex].daysRequired = selected.nO_DAYS_REQUIRED;
+      this.authorityTableData[rowIndex].authorityDept = selected.sanctioN_DEPARTMENT;
+      this.authorityTableData[rowIndex].endResult = selected.enD_RESULT_DOC;
+    }
+  }
+}
+  // checkValue(values?: any) {
+  //   const formArray = this.approvalTempForm.get('rows') as FormArray;
+  //   // console.log('this.getRelAbbr from checkValue', values);
+
+  //   if (!this.isCheckValueCalled) {
+  //     // Process all the rows for the first time if checkValue is not yet called
+  //     values.forEach((value: any) => {
+  //       if (this.taskData && this.taskData.subtasK_LIST) {
+  //         this.taskData.subtasK_LIST.forEach((subtask: any) => {
+  //           const departmentList = this.departmentList;
+  //           const matchedDepartment = departmentList.find(department => department.mkey === value.authoritY_DEPARTMENT);
+
+  //           // console.log('matchedDepartment', matchedDepartment);
+
+  //           if (matchedDepartment) {
+  //             //console.log('matchedDepartment: ', matchedDepartment)
+  //             value.sanctioN_DEPARTMENT = matchedDepartment.typE_DESC;
+  //           } else {
+  //             console.log("Department not found");
+  //           }
+
+  //           if (value.maiN_ABBR && value.maiN_ABBR === subtask.subtasK_ABBR) {
+  //             const rowForm = this.fb.group({
+  //               sequentialNo: [subtask.seQ_NO],
+  //               abbrivation: [subtask.subtasK_ABBR],
+  //               shorT_DESCRIPTION: [value.shorT_DESCRIPTION],
+  //               sanctioN_DEPARTMENT: [value.sanctioN_DEPARTMENT || ''],
+  //               nO_DAYS_REQUIRED: [value.dayS_REQUIERD || ''],
+  //               authoritY_DEPARTMENT: [value.authoritY_DEPARTMENT || ''],
+  //               enD_RESULT_DOC: [value.enD_RESULT_DOC || ''],
+  //               subtasK_MKEY: [subtask.subtasK_MKEY],
+  //               subTaskTags: [''],
+  //             });
+
+  //             formArray.push(rowForm);
+  //           }
+  //         });
+  //       }
+  //     });
   //   }
   // }
 
@@ -319,10 +417,10 @@ export class AddApprovalComponent {
     { header: 'Mode', isSwitch: true },
     { header: '', isAction: true },
   ];
-  authorityTableData = [
-    { level: 1, sanctioningDepartment: 'Dep 1', sanctioningAuthority: 'A 1', isActive: true },
-    { level: 2, sanctioningDepartment: 'Dep 2', sanctioningAuthority: 'A 2', isActive: false },
-  ];
+  // authorityTableData = [
+  //   { level: 1, sanctioningDepartment: 'Dep 1', sanctioningAuthority: 'A 1', isActive: true },
+  //   { level: 2, sanctioningDepartment: 'Dep 2', sanctioningAuthority: 'A 2', isActive: false },
+  // ];
 
   // Checklist
   searchQuery: string = '';

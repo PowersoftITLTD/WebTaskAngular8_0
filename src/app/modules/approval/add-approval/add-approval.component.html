@@ -35,17 +35,17 @@
       </div>
 
       <div class="grid mt-2">
-        <div class="col-9">
+        <div class="col-8">
           <label class="block mb-1">Short decription</label>
           <input type="text" pInputText formControlName="shortDescription" style="width: -webkit-fill-available;" />
         </div>
-        <div class="col-3">
+        <div class="col-4">
           <label class="block mb-1">Project Abbreviation</label>
           <input type="text" pInputText formControlName="projectAbbreviation" style="width: -webkit-fill-available;" />
         </div>
       </div>
 
-      <div class="grid mt-5">
+      <div class="grid mt-2">
         <div class="field col-12">
           <label for="description">Description</label>
           <p-editor id="description" [style]="{ height: '140px' }" formControlName="longDescription"></p-editor>
@@ -103,52 +103,48 @@
       </div>
 
       <div class="flex justify-content-between mt-2">
-        <div class="col-4">
+        <div class="col-2">
           <label class="block mb-1">Sequence No.</label>
           <input type="text" pInputText formControlName="shortDescription" style="width: -webkit-fill-available;" />
         </div>
 
-        <div class="col-4">
+        <div class="col-2">
           <label class="block mb-1">No. of Days</label>
           <input type="text" pInputText formControlName="shortDescription" style="width: -webkit-fill-available;" />
         </div>
+
+        <div class="col-8">
+           <label class="block mb-1">Tags</label>
+            <input
+              type="text"
+              pInputText
+              placeholder="Tags"
+              (focus)="tags.toggle($event)"
+              class="block mb-1"
+              style="width: -webkit-fill-available;"
+            />
+            <!-- @if (selectedTag.length) {
+              <p-badge [value]="selectedTag.length"></p-badge>
+            } -->
+
+            <p-overlayPanel #tags styleClass="task-add-new">
+              <p-multiSelect
+                [options]="tagsList"
+                [(ngModel)]="selectedTag"
+                optionLabel="name"
+                optionValue="name"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Select Tags"
+                display="chip"
+                (keydown)="handleKeyDown($event)"
+                [emptyFilterMessage]="'Press enter to add tag'"
+              ></p-multiSelect>
+            </p-overlayPanel>
+        </div>
       </div>
 
-      <div class="col-4">
-            <li (click)="tags.toggle($event)" class="dropdown-list-item">
-                  <i class="pi pi-tag"></i>
-                  Tags
-                  @if (selectedTag.length) {
-                    <!-- <i class="pi pi-verified check-icon"></i> -->
-                    <p-badge [value]="selectedTag.length" />
-                  }
-                </li>
-                <p-overlayPanel #tags styleClass="task-add-new">
-                  <!-- <p-listbox
-                  [options]="tagsList"
-                  [(ngModel)]="selectedTag"
-                  [ngModelOptions]="{standalone: true}"
-                  optionLabel="name"
-                  optionValue="name"
-                  [filter]="true"
-                  [style]="{ width: '200px' }"
-                  (onChange)="tags.toggle($event)"
-                /> -->
-                  <p-multiSelect
-                    #multiSelect
-                    [options]="tagsList"
-                    [(ngModel)]="selectedTag"
-                    optionLabel="name"
-                    optionValue="name"
-                    [ngModelOptions]="{ standalone: true }"
-                    placeholder="Select Tags"
-                    (keydown)="handleKeyDown($event)"
-                    display="chip"
-                    [emptyFilterMessage]="'Press enter to add tag'"
-                  >
-                  </p-multiSelect>
-                </p-overlayPanel>
-      </div>
+     
+
 
     </form>
 
@@ -282,17 +278,18 @@
           <p-overlayPanel #dropdown styleClass="task-add">
             <ul class="dropdown-list">
               <!-- Outcome -->
-              <li (click)="dropdown.toggle($event); showOutcome = !showOutcome" class="dropdown-list-item">
+              <!-- <li (click)="dropdown.toggle($event); showOutcome = !showOutcome" class="dropdown-list-item">
                 <i class="pi pi-building"></i>
                 Outcome
-              </li>
+              </li> -->
               <!-- Authority -->
-              <li (click)="dropdown.toggle($event); showAuthority = !showAuthority" class="dropdown-list-item">
+              <!-- <li (click)="dropdown.toggle($event); showAuthority = !showAuthority" class="dropdown-list-item">
                 <i class="pi pi-building"></i>
                 Authority
-              </li>
+              </li> -->
               <!-- Dates -->
-              <li (click)="date.toggle($event)" class="dropdown-list-item">
+
+              <!-- <li (click)="date.toggle($event)" class="dropdown-list-item">
                 <i class="pi pi-calendar"></i>
                 Dates
               </li>
@@ -340,7 +337,8 @@
                       </div>
                     </div>
                   </div>
-                  <!-- <div class="calendar">
+
+                  <div class="calendar">
                     <p-calendar
                       class="max-w-full"
                       [inline]="true"
@@ -348,8 +346,8 @@
                       (onSelect)="updateDays()"
                       selectionMode="range"
                     />
-                  </div> -->
-                  <div class="actions">
+                  </div> 
+                   <div class="actions">
                     <button pButton class="tm-primary-outline justify-content-center" [outlined]="true"
                       severity="secondary" (click)="resetValues(); date.toggle($event)">
                       Cancel
@@ -360,9 +358,11 @@
                     </button>
                   </div>
                 </div>
-              </p-overlayPanel>
+              </p-overlayPanel> -->
+
               <!-- Category -->
-              <li (click)="category.toggle($event)" class="dropdown-list-item">
+
+              <!-- <li (click)="category.toggle($event)" class="dropdown-list-item">
                 <i class="pi pi-th-large"></i>
                 Category
                 @if (selectedCategory) {
@@ -372,8 +372,10 @@
               <p-overlayPanel #category styleClass="task-add">
                 <p-listbox [options]="properties" [(ngModel)]="selectedCategory" optionLabel="name" optionValue="name"
                   [filter]="true" [style]="{ width: '250px' }" (onChange)="category.toggle($event)" />
-              </p-overlayPanel>
+              </p-overlayPanel> -->
+
               <!-- Type -->
+               
               <li (click)="type.toggle($event)" class="dropdown-list-item">
                 <i class="pi pi-th-large"></i>
                 Type
@@ -385,8 +387,10 @@
                 <p-listbox [options]="properties" [(ngModel)]="selectedType" optionLabel="name" optionValue="name"
                   [filter]="true" [style]="{ width: '250px' }" (onChange)="type.toggle($event)" />
               </p-overlayPanel>
+
               <!-- Priority -->
-              <li (click)="priority.toggle($event)" class="dropdown-list-item">
+
+              <!-- <li (click)="priority.toggle($event)" class="dropdown-list-item">
                 <i class="pi pi-flag"></i>
                 Priority
                 @if (selectedPriority) {
@@ -403,15 +407,17 @@
                     </div>
                   </ng-template>
                 </p-listbox>
-              </p-overlayPanel>
+              </p-overlayPanel> -->
+
               <!-- Tags -->
-              <li (click)="tags.toggle($event)" class="dropdown-list-item">
+
+              <!-- <li (click)="tags.toggle($event)" class="dropdown-list-item">
                 <i class="pi pi-tag"></i>
                 Tags
                 @if (selectedTag) {
                 <p-badge [value]="1" severity="secondary" />
                 }
-              </li>
+              </li> -->
               <p-overlayPanel #tags styleClass="task-add">
                 <p-listbox [options]="properties" [(ngModel)]="selectedTag" optionLabel="name" optionValue="name"
                   [filter]="true" [style]="{ width: '200px' }" (onChange)="tags.toggle($event)" />
@@ -605,16 +611,27 @@
 
     <!--Sub task list-->
     @if(showSubTaskList){
-      <div class="container-add mt-3">      
-
+     <div class="container-add mt-3">
         <div class="mb-3">
           <button pButton class="tm-primary-outline" [outlined]="true" label="Add" icon="pi pi-plus"
-            severity="secondary"></button>
+            severity="secondary" (click)="addRow()"></button>
         </div>
 
-        <app-tm-table [columns]="authorityTableColumns" [data]="authorityTableData" [selectable]="false" [status]="false">
-        </app-tm-table>
-      </div>
+        <!-- <app-tm-table
+          [columns]="authorityTableColumns"
+          [data]="authorityTableData"
+          (rowChange)="onTableRowChange($event)"
+          (deleteRow)="removeRow($event)">
+        </app-tm-table> -->
+
+        <app-approval-table
+         [columns]="authorityTableColumns"
+    [data]="authorityTableData"
+    (rowChange)="onTableRowChange($event)"
+    (deleteRow)="removeRow($event)">          
+        </app-approval-table>
+    </div>
+
     }
 
   </ng-template>
