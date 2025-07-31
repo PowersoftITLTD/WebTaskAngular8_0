@@ -1,0 +1,182 @@
+.login-main-container {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+
+  .image-container {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    //  background-image: url("/assets/leftLogo.svg");
+    background: rgb(238, 174, 202);
+    background: linear-gradient(250deg, rgba(238, 174, 202, 1) 2%, rgba(148, 187, 233, 1) 100%);
+  }
+
+  .login-logo {
+    width: 55%;
+  }
+
+  .login-data-container,
+  .otp-form-container {
+    flex: 1;
+    padding: 0px 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    // background-color: #fff;
+    border-radius: 8px;
+
+    h2 {
+      font-size: 24px;
+      margin-top: 30px;
+      margin-bottom: 13px;
+      color: #333;
+    }
+
+    p {
+      font-size: 16px;
+      margin-bottom: 30px;
+      color: #666;
+    }
+
+    .input-label {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .custom-otp-input::placeholder {
+      color: rgba(156, 163, 175, 0.397);
+      opacity: 1;
+    }
+
+    .custom-otp-input {
+      width: 20%;
+      height: 56px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 24px;
+      border: 1px solid #ccc;
+      background-color: #ffffff;
+      transition: border-color 0.3s ease;
+      margin-bottom: 20px;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      &:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+
+      &:not(:last-child) {
+        margin-right: 16px;
+      }
+    }
+
+    .resend-container {
+      font-size: 14px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      p {
+        margin: 0px;
+      }
+      .resendText {
+        font-weight: 600;
+        cursor: pointer;
+        outline: 0px;
+        border: 0px;
+        background-color: transparent;
+        font-size: 15px;
+        letter-spacing: 1px;
+      }
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 0px;
+
+      i {
+        margin-right: 8px;
+      }
+    }
+  }
+
+  .p-inputotp .p-inputtext {
+    font-size: 24px;
+    text-align: center;
+    border-radius: 8px;
+    padding: 12px 14px !important;
+    flex: 1;
+  }
+
+  .p-inputotp input:last-child {
+    margin-right: 0;
+  }
+
+  .p-inputotp input:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+}
+
+
+// /////
+.main-wrapper{
+  min-height: 100vh;
+  width: 100%;
+  .bg-color{
+    background: linear-gradient(250deg, #eeaeca , #94bbe9 100%);
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .img-wrapper {
+      max-width: 445px;
+      img {
+        max-width: 100%;
+      }
+    }
+  }
+}
+
+.login-wrapper{
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  margin: 0 auto;
+  height: 100%;
+  .form-container {
+    max-width: 100%;
+    margin: 0 auto;
+    width: 410px;
+    padding: 16px 16px;
+    h2{
+      color: #131313;
+      font-size: 32px;
+      line-height: 28px;
+      margin-bottom: 9px;
+    }
+    p{
+      color: #a9a9a9;
+      font-size: 14px;
+      margin-bottom: 35px;
+    }
+    .grd-btn {
+      background-image: linear-gradient(45deg, #0D6AF0, #A81BE9 70%) !important;
+    }
+  }
+}

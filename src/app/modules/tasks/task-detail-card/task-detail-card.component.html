@@ -1,0 +1,72 @@
+<div class="property-card">
+    <div class="property-content">
+      
+      <!-- Left Section -->
+      <div class="property-left">
+        <div class="project-info">
+          <span>{{ taskDetailCard.title }}</span>
+          <p>{{ taskDetailCard.description }}</p>
+        </div>
+  
+        <!-- Attachments Section -->
+        <div class="attachments-container">
+            <div class="attachments-header">
+              <span class="">Attachments ({{ attachments.length + moreAttachments }})</span>
+              <span class="download-all"><img src="assets/download.svg" class="icon" /> Download All</span>
+            </div>
+          
+            <div class="attachment-list">
+              <div class="attachment" *ngFor="let file of attachments">
+                <img [src]="file.icon" />
+                <span>{{ file.name }}</span>
+                <img [src]="file.downloadIcon" />
+              </div>
+              <span class="more-attachments">+{{ moreAttachments }}</span>
+            </div>
+          </div>
+          
+      </div>
+  
+      <!-- Right Section -->
+      <div class="property-right">
+        <div class="property-details">
+          <div class="detail">
+            <img src="assets/priority.svg" class="icon" />
+            <span>Priority :</span>
+            <span ><img [src]="priority.icon" alt="Priority Icon" /></span>
+            <span >{{ priority.label }}</span>
+          </div>
+  
+          <div class="detail">
+            <img src="assets/assignees.svg" class="icon" />
+            <span>Assignees :</span>
+            <div class="assignees">
+              <img *ngFor="let assignee of assignees" [src]="assignee" class="assignee-img" />
+              <span class="more-assignees">+{{ moreAssignees }}</span>
+            </div>
+          </div>
+  
+          <div class="detail">
+            <img src="assets/calendar.svg" class="icon" />
+            <span>Due Date :</span> {{ dueDate }}
+          </div>
+  
+          <div class="detail" *ngFor="let detail of propertyDetails">
+            <img [src]="detail.icon" class="icon" />
+            <span>{{ detail.label }} :</span> {{ detail.value }}
+          </div>
+  
+          <div class="detail">
+            <img src="assets/tag.svg" class="icon" />
+            <span>Tags :</span>
+            <div class="tags">
+              <span *ngFor="let tag of tags" class="tag">{{ tag }}</span>
+              <span class="more-tags">+2</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  

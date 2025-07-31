@@ -1,0 +1,90 @@
+<!-- gantt-chart.component.html -->
+<div class="controls-container">
+  <div class="controls">
+    <select [(ngModel)]="selectedYear" (change)="updateChart()">
+      <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+    </select>
+
+    <span class="divider"></span>
+
+    <div class="month-picker">
+      <button class="arrow" (click)="prevMonth()">
+        <i class="pi pi-angle-left"></i>
+      </button>
+
+      <div class="month-list">
+        <span
+          *ngFor="let month of getDisplayedMonths(); let i = index"
+          class="month-item"
+          [class.active]="month === selectedMonth"
+          (click)="selectMonth(month)"
+        >
+          {{ months[month] }}
+        </span>
+      </div>
+
+      <button class="arrow" (click)="nextMonth()">
+        <i class="pi pi-angle-right"></i>
+      </button>
+    </div>
+  </div>
+  <div class="task-info-container">
+    <div class="task-info">
+      <span class="task-info-circle notStarted"></span>
+      <span>Not Started</span>
+    </div>
+    <div class="task-info">
+      <span class="task-info-circle inProcess"></span>
+      <span>In Progress</span>
+    </div>
+    <div class="task-info">
+      <span class="task-info-circle completed"></span>
+      <span>For Review</span>
+    </div>
+  </div>
+</div>
+
+<div class="gantt-container">
+  <div class="gantt-chart">
+    <div class="gantt-header">
+      <div class="day-header" *ngFor="let day of days" [class]="day.dayName">
+        <div class="day-number">{{ day.dayNumber.toString().padStart(2, '0') }}</div>
+        <div class="day-name">{{ day.dayName.charAt(0) }}</div>
+      </div>
+    </div>
+
+    <div class="gantt-body">
+      <div class="days-background">
+        <div
+          *ngFor="let day of days; let i = index"
+          class="day-background"
+          [class]="day.dayName"
+        ></div>
+      </div>
+
+      <div class="tasks-container" [ngStyle]="{ height: tasksContainerHeight }">
+        <div
+          *ngFor="let task of filteredTasks"
+          class="task-bar"
+          [ngStyle]="getTaskPosition(task)"
+          (click)="onTaskClick(task)"
+          [class]="task.status"
+          [pTooltip]="task.name"
+          tooltipPosition="top"
+        >
+          <div class="task-label">
+            <span>
+              <i class="pi pi-sort-up-fill rotate-90"></i>
+              {{ task.name }}
+            </span>
+          </div>
+          <!-- <div class="profile-pics">
+            @for (img of task.profileUrls; track $index) {
+              <img width="24" height="24" loading="lazy" [src]="img" alt="" />
+            }
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

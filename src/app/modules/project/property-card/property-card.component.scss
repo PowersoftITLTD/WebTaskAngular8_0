@@ -1,0 +1,57 @@
+.property-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+  }
+  
+  .property-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .property-left {
+    width: 70%;
+  }
+  
+  .property-right {
+    width: 30%;
+  }
+  
+  .property-header {
+    font-size: 18px;
+    // font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .project-info span {
+    font-size: 14px;
+    font-weight: 500;
+}
+  .project-info p {
+    margin-top: 8px;
+    color: #414651;
+    font-size: 14px;
+}
+
+  .property-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .detail {
+    display: flex;
+    align-items: center; 
+    gap: 8px;
+  }
+  
+  .icon img {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+}
+  

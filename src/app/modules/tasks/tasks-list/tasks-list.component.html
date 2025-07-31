@@ -1,0 +1,90 @@
+<div class="flex justify-content-between mb-3">
+  <!-- Tabs -->
+  <app-tm-tabs
+    [tabs]="tabList"
+    [counts]="tabCounts"
+    (tabChanged)="onTabChange($event)"
+    [activeTab]="currentTab"
+    [showCount]="false"
+  >
+  </app-tm-tabs>
+  <!-- Add Task -->
+  <div class="card flex justify-content-center">
+    <p-menu
+      #menu
+      [model]="items"
+      [popup]="true"
+      (onShow)="addTask.classList.add('active')"
+      (onHide)="addTask.classList.remove('active')"
+    />
+    <p-button (onClick)="menu.toggle($event); isEdit = false" class="tm-primary-btn dropdown-btn">
+      <i class="pi pi-plus"></i>
+      <span> Add New Task </span>
+      <span #addTask class="arrow-icon">
+        <i class="pi pi-angle-down"></i>
+      </span>
+    </p-button>
+  </div>
+</div>
+
+<!-- Advance Search -->
+<div class="mb-3">
+  <app-tm-advance-search [showButton]="false"></app-tm-advance-search>
+</div>
+
+<!-- List Tab -->
+@if (currentTab === 'List') {
+  @for (dataObj of data; track $index) {
+    <div class="mb-2">
+      <app-progress-card
+        [data]="dataObj"
+        (onEdit)="onEditOfCard($event)"
+        (onViewDetails)="handleViewDetail($event)"
+      ></app-progress-card>
+    </div>
+  }
+  @if (isLoading) {
+    @for (_ of [1, 2, 3]; track $index) {
+      <div class="mb-2">
+        <app-progress-card [isLoading]="true"></app-progress-card>
+      </div>
+    }
+  }
+}
+
+<!-- Board -->
+@if (currentTab === 'Board') {
+  <app-tasks-board
+    [data]="data"
+    (onEdit)="onEditOfCard($event)"
+    (onViewDetails)="handleViewDetail($event)"
+  ></app-tasks-board>
+}
+
+<!-- Timeline -->
+@if (currentTab === 'Timeline') {
+  <app-tasks-timeline></app-tasks-timeline>
+}
+
+<!-- Table -->
+@if (currentTab === 'Table') {
+  <app-tm-table
+    [columns]="columns"
+    [data]="data"
+    [selectable]="true"
+    [status]="true"
+    [loading]="isLoading"
+    [customClassValue]="customClass"
+    [nestedColumns]="nestedColumn"
+  ></app-tm-table>
+}
+
+<!-- Task Add/Edit -->
+@if (sidebarVisible) {
+  <app-tasks-add
+    [sidebarVisible]="sidebarVisible"
+    [isEditMode]="isEdit"
+    [formData]="formDataOfEditTask"
+    (sidebarHide)="onAdditionOfTask($event)"
+  ></app-tasks-add>
+}

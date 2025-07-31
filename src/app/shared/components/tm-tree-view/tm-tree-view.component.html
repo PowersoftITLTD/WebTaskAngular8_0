@@ -1,0 +1,27 @@
+<p-treeTable [value]="tableData" [scrollable]="true">
+    <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+        <tr [ttRow]="rowNode">
+          @for (localobj of nestedColumns; track localobj;let k = $index;) {
+            <td class="new_width">
+              @if(k == 0 && localobj?.isColumnVisible && localobj?.field ) {
+                <p-treeTableToggler [rowNode]="rowNode" />
+                <!-- {{ rowData[localobj.field] }} -->
+              }
+              @else {
+                <span *ngIf="localobj?.isColumnVisible">
+                  <!-- {{ rowData.label }} -->
+                </span>
+              }
+            </td>
+          }
+            <!-- <td class="new_width text-center"></td>
+            <td class="new_width text-center"></td>
+            <td class="new_width text-center"></td>
+            <td class="new_width text-center"></td>
+            <td class="new_width text-center"></td>
+            <td class="new_width text-center"></td>
+            <td class="new_width text-center" colspan="4"></td>
+            <td class="new_width text-center" style="width: 6%;"></td> -->
+        </tr>
+    </ng-template>
+   </p-treeTable>

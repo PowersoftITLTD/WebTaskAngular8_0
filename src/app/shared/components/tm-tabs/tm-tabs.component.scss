@@ -1,0 +1,57 @@
+@import 'variables';
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid $border-color;
+  width: max-content;
+
+  .tab-item {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    cursor: pointer;
+
+    .tab-label {
+      color: #2e2e2e;
+      i {
+        margin-right: 8px;
+      }
+    }
+
+    .tab-count {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2px 10px;
+      color: white;
+      background: #e9eaeb;
+      color: #717680;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    &.active {
+      position: relative;
+      .tab-label {
+        background: $primary-color;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .tab-count {
+        background: $primary-color;
+        color: white;
+      }
+
+      &::after {
+        content: '';
+        width: 100%;
+        height: 2px;
+        background: $primary-color;
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+      }
+    }
+  }
+}

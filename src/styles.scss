@@ -1,0 +1,170 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import 'variables.scss';
+// import Quill styles in styles.scss
+@import '../node_modules/quill/dist/quill.core.css';
+@import '../node_modules/quill/dist/quill.snow.css';
+
+:root {
+  --font-family: $font-family;
+  --border-radius: 8px;
+}
+
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: $bg-color;
+  font-family: $font-family;
+}
+
+// Scrollbar
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f3f3f3;
+  border-radius: 100px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #c8cace;
+  border-radius: 100px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  body {
+    scrollbar-color: #c8cace #f3f3f3;
+  }
+}
+
+input[type='checkbox'] {
+  cursor: pointer;
+}
+
+// Button
+.tm-primary-btn,
+.tm-primary-btn button {
+  background: $primary-color;
+  border: none;
+  border-radius: 8px;
+  gap: 8px;
+}
+
+.tm-primary-outline,
+.tm-primary-outline button {
+  background: white;
+  border-color: $border-color;
+  border-radius: 8px;
+  gap: 8px;
+}
+
+.dropdown-btn {
+  border-radius: 8px;
+
+  button {
+    gap: 8px;
+  }
+
+  .arrow-icon {
+    transition: transform 0.3s ease-in-out;
+
+    &.active {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+// Badge
+.p-badge.p-badge-danger {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fdfdfd;
+  background: $light-red-color;
+}
+
+// Overlay
+.outline-overlay-btn {
+  border: 1px solid $border-color;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &.active {
+    background: $light-gradient-color;
+  }
+}
+
+// Filter Search Icon
+.p-icon-field .p-input-icon,
+.p-input-icon-right > .p-icon-wrapper,
+.p-listbox-filter-icon,
+.p-dropdown-filter-icon {
+  margin-top: -0.5rem;
+}
+
+// Input number arrow
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+// calender Css
+.p-datepicker table td {
+  padding: 4px;
+}
+
+.p-datepicker table td > span {
+  width: 30px;
+  height: 30px;
+}
+
+.p-datepicker table {
+  font-size: 14px;
+}
+
+.p-datepicker .p-datepicker-header {
+  padding: 0;
+  padding-bottom: 0.5rem;
+}
+
+// Dropdown
+.p-dropdown .p-dropdown-label:not(.p-placeholder) {
+  color: $text-color;
+}
+
+// Checkbox
+.p-checkbox .p-checkbox-box.p-highlight {
+  background: $primary-color;
+}
+
+.p-menu .p-menuitem-link {
+  gap: 8px;
+}
+
+// customize toaster
+.p-toast .p-toast-message .p-toast-message-content {
+  align-items: center;
+  background-color: white;
+  padding: 12px 12px 12px 24px;
+}
+
+.p-toast .p-toast-message .p-toast-icon-close {
+  width: 20px;
+  height: 20px;
+}
+
+.p-dropdown {
+  width: 100%;
+}

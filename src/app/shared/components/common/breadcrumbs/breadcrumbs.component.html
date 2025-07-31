@@ -1,0 +1,23 @@
+<!-- breadcrumb.component.html -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      @for (item of breadcrumbItems; track item; let last = $last) {
+        <li class="breadcrumb-item" [ngClass]="{ active: last }">
+          @if (!last) {
+            <span class="flex align-items-center">
+              <a [routerLink]="item.url" [queryParams]="{ tab: item?.queryParam }">{{
+                item.label
+              }}</a>
+              <i class="pi pi-angle-right"></i>
+            </span>
+          }
+          @if (last) {
+            <span>
+              <a>{{ item.label }}</a>
+            </span>
+          }
+        </li>
+      }
+    </ol>
+  </nav>
+  

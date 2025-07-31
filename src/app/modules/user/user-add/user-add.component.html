@@ -1,0 +1,214 @@
+<app-breadcrumbs [breadcrumbItems]="breadcrumbs"></app-breadcrumbs>
+
+<!-- Action Bar -->
+<div class="new-pocket-add-container p-ai-center p-mb-3">
+  <h1 class="title">
+    <ng-container *ngIf="onEditPage; else newUser">
+      {{ staticUserDetail.userName }}
+    </ng-container>
+    <ng-template #newUser>
+      {{staticViewUserDetail.userName}}
+    </ng-template>
+  </h1>
+  <div class="p-d-flex">
+    <!-- <button
+      pButton
+      label="Save"
+      class="p-button-approval p-mr-2 mr-2"
+      (click)="showSaveDialog()"
+      [disabled]="!this.hasAccess.canWrite"
+    >
+      <img src="/assets/save-icon.svg" class="mr-1" alt="" />
+    </button> -->
+    <app-button class="tm-primary-btn" [label]="'Save'" (onClick)="showSaveDialog()"></app-button>
+  </div>
+</div>
+
+<form [formGroup]="userForm">
+  <!-- User Details -->
+  <div class="p-fluid grid formgrid stepper">
+    <div class="col-12 md:col-12 mb-3">
+      <label class="text-base">User Details</label>
+    </div>
+
+    <div class="field col-12 md:col-4">
+      <label>First Name <span class="text-red-600">*</span></label>
+      <input
+        type="text"
+        pInputText
+        formControlName="firstName"
+        placeholder="Enter First Name"
+        appTextOnly
+      />
+      <small class="text-red-600" *ngIf="userForm.get('firstName')?.touched && userForm.get('firstName')?.invalid">
+        First name is required
+      </small>
+    </div>
+
+    <div class="field col-12 md:col-4">
+      <label>Last Name <span class="text-red-600">*</span></label>
+      <input
+        type="text"
+        pInputText
+        formControlName="lastName"
+        placeholder="Enter Last Name"
+        appTextOnly
+      />
+      <small class="text-red-600" *ngIf="userForm.get('lastName')?.touched && userForm.get('lastName')?.invalid">
+        Last name is required
+      </small>
+    </div>
+
+    <div class="field col-12 md:col-4">
+      <label>Email <span class="text-red-600">*</span></label>
+      <input type="email" pInputText formControlName="email" placeholder="Enter Email" />
+      <small class="text-red-600" *ngIf="userForm.get('email')?.touched && userForm.get('email')?.invalid">
+        <ng-container *ngIf="userForm.get('email')?.errors?.['emailExists']">Email already exists</ng-container>
+        <ng-container *ngIf="userForm.get('email')?.errors?.['required']">Email is required</ng-container>
+        <ng-container *ngIf="!userForm.get('email')?.errors?.['emailExists'] && !userForm.get('email')?.errors?.['required']">Please enter a valid email</ng-container>
+      </small>
+    </div>
+
+    <div class="field col-12 md:col-4">
+      <label>User Name <span class="text-red-600">*</span></label>
+      <input type="text" pInputText formControlName="userName" placeholder="Enter User Name" />
+      <small class="text-red-600" *ngIf="userForm.get('userName')?.touched && userForm.get('userName')?.invalid">
+        <ng-container *ngIf="userForm.get('userName')?.errors?.['userNameExists']">User name already exists</ng-container>
+        <ng-container *ngIf="!userForm.get('userName')?.errors?.['userNameExists']">User name is required</ng-container>
+      </small>
+    </div>
+
+    <div class="field col-12 md:col-4">
+      <label>Password <span class="text-red-600">*</span></label>
+      <p-password
+        formControlName="passwordHash"
+        placeholder="Enter Password"
+        [feedback]="false"
+        [toggleMask]="true"
+      />
+      <small class="text-red-600" *ngIf="userForm.get('passwordHash')?.touched && userForm.get('passwordHash')?.invalid">
+        <ng-container *ngIf="userForm.get('passwordHash')?.errors?.['required']">Password is required</ng-container>
+        <ng-container *ngIf="!userForm.get('passwordHash')?.errors?.['required']">Please enter a valid password</ng-container>
+      </small>
+    </div>
+
+    <div class="field col-12 md:col-4 input-validation">
+      <label>
+        Enter a password with <span>8+ characters</span> including an
+        <span>uppercase, number</span> and <span>symbol</span>
+      </label>
+    </div>
+  </div>
+
+   <!-- Role Details -->
+   <div class="role-details stepper">
+    <h3>Role Details</h3>
+    <ng-container formArrayName="roles">
+      @for (role of roles.controls; track $index) {
+        <div [formGroupName]="$index" class="role-row">
+          <div class="field col-12 md:col-4">
+            <label for="assignRole">Assign Role <span class="text-red-600">*</span></label>
+            <p-dropdown
+              [filter]="true"
+              [options]="rolesList"
+              formControlName="roleID"
+              placeholder="Select role"
+              optionLabel="roleName"
+              optionValue="roleId"
+              [style]="{ width: '100%', fontSize: '14px' }"
+              [ngClass]="{
+                'invalid-dropdown':
+                  userForm.get('roles')?.errors?.['duplicateRoleID'] &&
+                  userForm
+                    .get('roles')
+                    ?.errors?.['duplicateIds'].includes(role.get('roleID')?.value),
+              }"
+            ></p-dropdown>
+            @if (role.get('roleID')?.touched && role.get('roleID')?.invalid) {
+              <small class="text-red-600"> Role is required </small>
+            }
+            @if (
+              userForm.get('roles')?.errors?.['duplicateRoleID'] &&
+              userForm.get('roles')?.errors?.['duplicateIds'].includes(role.get('roleID')?.value)
+            ) {
+              <small class="text-red-600">Duplicate roles are not allowed </small>
+            }
+          </div>
+
+          <div class="field col-12 md:col-4">
+            <label for="selectPockets">Select Pockets <span class="text-red-600">*</span></label>
+            <p-multiSelect
+              [options]="pocketsList"
+              formControlName="pocketID"
+              optionLabel="name"
+              display="chip"
+              placeholder="Select Pockets"
+              [style]="{ width: '100%' }"
+              optionLabel="pocketName"
+              optionValue="pocketID"
+              (onChange)="onChangePocket($event, $index)"
+            ></p-multiSelect>
+            @if (role.get('pocketID')?.touched && role.get('pocketID')?.invalid) {
+              <small class="text-red-600"> Pocket is required </small>
+            }
+          </div>
+          <button
+            class="remove-btn"
+            (click)="removeRole($index)"
+            [disabled]="!this.hasAccess.canWrite"
+          >
+            Remove
+          </button>
+        </div>
+      } @empty {
+        <div class="role-row p-3">No Role Added</div>
+      }
+    </ng-container>
+    <button
+      class="add-role-btn"
+      type="button"
+      (click)="addRole()"
+      [disabled]="!this.hasAccess.canWrite"
+    >
+      + Assign another Role
+    </button>
+  </div>
+</form>
+
+<!-- Save dialog -->
+<p-dialog
+  header=""
+  [(visible)]="draftVisible"
+  [closable]="true"
+  [modal]="true"
+  [style]="{ width: '404px' }"
+>
+  <div class="dialog-content">
+    <div class="icon-container">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M21 4.5H3C2.60218 4.5 2.22064 4.65804 1.93934 4.93934C1.65804 5.22064 1.5 5.60218 1.5 6V8.25C1.5 8.64782 1.65804 9.02936 1.93934 9.31066C2.22064 9.59196 2.60218 9.75 3 9.75V18C3 18.3978 3.15804 18.7794 3.43934 19.0607C3.72064 19.342 4.10218 19.5 4.5 19.5H19.5C19.8978 19.5 20.2794 19.342 20.5607 19.0607C20.842 18.7794 21 18.3978 21 18V9.75C21.3978 9.75 21.7794 9.59196 22.0607 9.31066C22.342 9.02936 22.5 8.64782 22.5 8.25V6C22.5 5.60218 22.342 5.22064 22.0607 4.93934C21.7794 4.65804 21.3978 4.5 21 4.5ZM14.25 13.5H9.75C9.55109 13.5 9.36032 13.421 9.21967 13.2803C9.07902 13.1397 9 12.9489 9 12.75C9 12.5511 9.07902 12.3603 9.21967 12.2197C9.36032 12.079 9.55109 12 9.75 12H14.25C14.4489 12 14.6397 12.079 14.7803 12.2197C14.921 12.3603 15 12.5511 15 12.75C15 12.9489 14.921 13.1397 14.7803 13.2803C14.6397 13.421 14.4489 13.5 14.25 13.5ZM21 8.25H3V6H21V8.25Z"
+          fill="#0B66E4"
+        />
+      </svg>
+    </div>
+    <p class="message" style="margin-bottom: 18px">Are You sure you want to save this user</p>
+    <p style="margin-top: -7px">You can always edit later</p>
+    <div class="button-container">
+      <button
+        pButton
+        type="button"
+        label="Yes, Save"
+        class="send-button"
+        (click)="onSubmit()"
+        [loading]="isLoading"
+      ></button>
+    </div>
+  </div>
+</p-dialog>

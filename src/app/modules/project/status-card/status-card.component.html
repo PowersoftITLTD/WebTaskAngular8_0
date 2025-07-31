@@ -1,0 +1,14 @@
+<div class="project-container">
+    <div *ngFor="let project of projects" class="project-card">
+      <div class="card-header">
+        <h6>{{ project.status }}</h6>
+      </div>
+      <hr class="separator" />
+      <div class="card-footer">
+        <div class="status-badge" [ngClass]="getStatusClass(project.status)">
+          <span>{{ project.value }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  

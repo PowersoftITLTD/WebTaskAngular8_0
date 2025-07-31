@@ -1,0 +1,29 @@
+<div class="property-card">
+    <div class="property-content">
+      <!-- Left Section -->
+      <div class="property-left">
+        <div class="property-header">
+          <span class="icon"><img src="assets/house-icon.svg" /></span>
+          <span> Property :</span> {{ property.name }}
+          <span class="icon"><img src="assets/building-icon.svg" /></span>
+          <span> Building :</span> {{ property.building }}
+        </div>
+  
+        <div class="project-info">
+          <span>{{projectName}}</span>
+          <p>{{ property.address }}</p>
+        </div>
+      </div>
+  
+      <!-- Right Section -->
+      <div class="property-right">
+        <div class="property-details">
+          <div class="detail" *ngFor="let detail of propertyDetails">
+            <span class="icon"><img [src]="detail.icon" /></span>
+            <span> {{ detail.label }} :</span> {{ detail.value }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

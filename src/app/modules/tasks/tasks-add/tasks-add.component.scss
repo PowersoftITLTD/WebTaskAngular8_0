@@ -1,0 +1,170 @@
+@import 'variables';
+
+::ng-deep .task-add .p-sidebar {
+  width: 1000px;
+  max-width: 100%;
+  color: $text-color;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+
+  .p-sidebar-header {
+    padding: 12px 24px;
+    border-bottom: 1px solid $light-border-color;
+  }
+
+  .p-sidebar-content {
+    padding: 16px 24px;
+  }
+}
+
+::ng-deep .p-overlaypanel.task-add {
+  box-shadow: none;
+
+  .p-overlaypanel-content {
+    padding: 0;
+  }
+}
+::ng-deep .p-overlaypanel.task-add-new {
+  width: 320px !important;
+  // left: 77%!important;
+  .p-multiselect {
+    width: 100%;
+    .p-multiselect-item {
+      gap: 10px;
+    }
+    .p-multiselect-header {
+      padding: 7px;
+      gap: 5px;
+      align-items: center;
+    }
+    .p-multiselect-filter-icon {
+      margin-top: -.5rem !important;
+    }
+    .p-multiselect-token {
+      font-size: 12px;
+      gap: 2px;
+    }
+  }
+}
+
+::ng-deep .p-overlaypanel.table-container {
+  max-width: calc(1000px - 24px);
+  left: auto !important;
+  right: 0;
+  margin: 0 12px;
+}
+
+::ng-deep .p-listbox .p-listbox-list .p-listbox-item,
+::ng-deep .p-listbox .p-listbox-header {
+  gap: 8px;
+}
+
+.completion-date {
+  border: 1px solid $light-border-color;
+  border-radius: 8px;
+  .days {
+    border-bottom: 1px solid $light-border-color;
+    padding: 12px 16px;
+  }
+  .actions {
+    display: flex;
+    padding: 12px;
+    gap: 12px;
+
+    button {
+      flex: 1;
+    }
+  }
+  .tentative-dates {
+    max-width: 350px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e9eaeb;
+    padding-bottom: 4px;
+  }
+}
+
+// calender Css
+::ng-deep .p-calendar .p-datepicker {
+  border: none;
+  border-bottom: 1px solid $light-border-color;
+}
+
+// Authority
+.container-add {
+  padding: 12px;
+  border: 1px solid $light-border-color;
+  border-radius: 8px;
+}
+
+.authority-add {
+  padding: 12px;
+  border: 1px solid $light-border-color;
+  border-radius: 8px;
+}
+
+// Checklist
+.side-pannel {
+  padding: 12px;
+  background: $light-grey-color;
+  border-radius: 8px;
+
+  .list-item {
+    padding: 12px;
+    border-bottom: 1px solid $light-border-color;
+
+    label {
+      font-size: 14px;
+      margin-left: 12px;
+    }
+  }
+}
+
+::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link {
+  background-color: white;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
+}
+::ng-deep .p-accordion-toggle-icon-end {
+  margin-left: auto;
+}
+::ng-deep .p-accordion .p-accordion-content {
+  padding: 12px;
+}
+
+// Dropdown
+.dropdown-list {
+  border: 1px solid #d5d7da;
+  border-radius: 8px;
+  list-style: none;
+  padding: 0;
+
+  .dropdown-list-item {
+    cursor: pointer;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 180px;
+    &:hover {
+      background-color: #f3f4f6;
+    }
+  }
+}
+
+.check-icon {
+  color: $blue-color;
+}
+
+
+.selected-items {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.more-count {
+  font-size: 14px;
+  color: #666;
+  margin-left: 5px;
+}

@@ -1,0 +1,58 @@
+<!-- header section -->
+<nav class="navbar p-3 bg-white">
+  <!-- dropdown section -->
+  <div class="navbar-left">
+    <h2 class="font-normal m-0">Good Morning, Jagdish</h2>
+  </div>
+
+  <div class="navbar-right">
+    <div class="calendar">
+      <a class="outline-overlay-btn">
+        <i class="pi pi-calendar"></i>
+        <span class="font-semibold text-700"> 07, Jan 2025 </span>
+      </a>
+    </div>
+    <div class="icon">
+      <i class="pi pi-bell notifications-icon"></i>
+    </div>
+    <div class="profile">
+      <!-- <img src="https://via.placeholder.com/40" alt="Profile Image" (click)="op.toggle($event)" class="profile-pic" /> -->
+      <div (click)="op.toggle($event)" class="profile-pic">JG</div>
+    </div>
+  </div>
+</nav>
+
+<!-- login profile popup section -->
+<p-overlayPanel #op styleClass="w-15rem">
+  <div class="">
+    <div class="roles-title">Account</div>
+    <div class="account-header">
+      <!-- <img src="https://via.placeholder.com/40" alt="Profile Picture" class="profile-pic" /> -->
+      <div class="profile-pic">JG</div>
+      <div class="account-info">
+        <div class="account-name">Jagdish</div>
+        <div class="account-email">{{ 'Jagdish@gmail.com' }}</div>
+      </div>
+    </div>
+    <hr class="divider" />
+    <div class="roles-section">
+      <div class="roles-title">Roles</div>
+
+      <div class="role-option selected-role">
+        Master Role
+        <span class="role-tick">
+          <i class="pi pi-check-circle"></i>
+        </span>
+      </div>
+
+      <div class="role-option">Template Role</div>
+    </div>
+    <hr class="divider" />
+    <div class="logout-section">
+      <a class="logout-link cursor-pointer" (click)="logout()">
+        <span class="logout-icon"><i class="pi pi-sign-out settings-icon"></i></span>
+        Logout
+      </a>
+    </div>
+  </div>
+</p-overlayPanel>

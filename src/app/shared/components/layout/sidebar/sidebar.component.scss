@@ -1,0 +1,15 @@
+@import 'variables.scss';
+
+a.active {
+  background: $light-gradient-color;
+  position: relative;
+  &::after {
+    content: '';
+    background: $primary-color;
+    height: 20px;
+    width: 4px;
+    border-radius: 8px;
+    position: absolute;
+    left: 0;
+  }
+}

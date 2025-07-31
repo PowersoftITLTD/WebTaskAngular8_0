@@ -1,0 +1,101 @@
+<!-- breadcrumbItems -->
+<div class="mb-3">
+  <app-breadcrumbs [breadcrumbItems]="breadcrumbs"></app-breadcrumbs>
+</div>
+
+<!-- progress Bar -->
+<div>
+  <app-tasks-progress></app-tasks-progress>
+</div>
+
+<!-- task detail card -->
+<div class="mt-3">
+  <app-task-detail-card></app-task-detail-card>
+</div>
+<!-- tabs -->
+<div class="mb-3 mt-3">
+  <app-tm-tabs
+    [tabs]="tabList"
+    [counts]="tabCounts"
+    (tabChanged)="onTabChange($event)"
+    [activeTab]="currentTab"
+    [showCount]="false"
+  >
+  </app-tm-tabs>
+</div>
+
+@if (currentTab === 'Subtasks') {
+  <div class="subtask">
+    <h4 class="font-medium">Subtasks</h4>
+    <p-button
+      class="tm-primary-outline"
+      label="Add Subtasks"
+      [outlined]="true"
+      severity="secondary"
+      icon="pi pi-plus"
+      (onClick)="addSubTask()"
+    />
+  </div>
+  <app-tm-table
+    [columns]="columns"
+    [data]="data"
+    [selectable]="true"
+    [status]="true"
+    [loading]="false"
+    [customClassValue]="customClass"
+    [nestedColumns]="nestedColumn"
+  ></app-tm-table>
+}
+@if (currentTab === 'Task progress') {
+  <div class="progress">
+    <button pButton class="tm-primary-btn" (click)="updateProgress()">Update Progress</button>
+  </div>
+  <app-tm-table
+    [columns]="columns"
+    [data]="data"
+    [selectable]="true"
+    [status]="true"
+    [loading]="false"
+    [customClassValue]="customClass"
+    [nestedColumns]="nestedColumn"
+  ></app-tm-table>
+}
+@if (currentTab === 'Comments') {
+  <app-comment></app-comment>
+}
+
+@if (currentTab === 'Activity log') {
+  <div class="mb-3">
+    <app-tm-advance-search [showButton]="false"></app-tm-advance-search>
+  </div>
+  <app-tm-table
+    [columns]="columns"
+    [data]="data"
+    [selectable]="true"
+    [status]="true"
+    [loading]="false"
+    [customClassValue]="customClass"
+    [nestedColumns]="nestedColumn"
+  ></app-tm-table>
+}
+<!-- SubTask Add -->
+<!-- <app-add-sub-tasks
+  [sidebarVisible]="sidebarVisible"
+  (sidebarHide)="sidebarVisible = false"
+></app-add-sub-tasks> -->
+@if (sidebarVisible) {
+  <app-tasks-add
+    [sidebarVisible]="sidebarVisible"
+    [isEditMode]="isEdit"
+    [formData]="formDataOfEditTask"
+    (sidebarHide)="onAdditionOfTask($event)"
+    [isSubTask]="true"
+    [parentTaskData]="taskData"
+  ></app-tasks-add>
+}
+
+<!-- update progress -->
+<app-update-progress
+  [progressSidebarVisible]="progressSidebarVisible"
+  (sidebarHide)="progressSidebarVisible = false"
+></app-update-progress>

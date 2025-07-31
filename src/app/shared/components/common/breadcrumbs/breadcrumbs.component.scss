@@ -1,0 +1,50 @@
+/* breadcrumb.component.scss */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  font-size: 14px;
+  margin-bottom: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #F5F5F5;
+  padding: 8px 32px;
+}
+
+::ng-deep .main-content {
+  position: relative;
+}
+
+// .breadcrumb-item + .breadcrumb-item::before {
+//   content: '>';
+//   padding: 0 0.5rem;
+//   color:#888;
+// }
+
+.breadcrumb-item.active {
+
+  // color:#888;
+  a {
+    font-weight: 600;
+    color: #131313;
+  }
+}
+
+i {
+  margin: 0 12px;
+  color: #767676;
+  font-weight: 100;
+}
+
+a {
+  font-weight: 400;
+  color: #767676;
+  text-decoration: none;
+}
+
+ol {
+  margin: 0;
+}

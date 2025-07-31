@@ -1,0 +1,68 @@
+<p-sidebar
+  [(visible)]="progressSidebarVisible"
+  position="right"
+  [showCloseIcon]="false"
+  [dismissible]="true"
+  (onHide)="onSidebarHide()"
+  class="task-add"
+>
+  <div class="progress">
+    <h2 class="font-semibold">Progress</h2>
+    <i class="pi pi-times text-gray-500 cursor-pointer" (click)="onSidebarHide()"></i>
+  </div>
+  <div class="flex items-center gap-2">
+    <i class="pi pi-clock"></i>
+    <span class="progress-label">Progress</span>
+  </div>
+  <div class="progress-container">
+    <div class="progress-bar-wrapper">
+      <div style="width: 100%;">
+      <p-slider 
+        [(ngModel)]="progressValue" 
+        [min]="0" 
+        [max]="100" 
+        [style]="{ width: '100%' }"
+        [range]="false">
+      </p-slider>
+      </div>
+      <span class="progress-percentage">{{ progressValue }} %</span>
+    </div>
+    <div class="progress-labels">
+      <span class="progress-label">Not Started</span>
+      <span class="progress-label active">In progress</span>
+      <span class="progress-label">Complete</span>
+    </div>
+  </div>
+  <div class="progress">
+    <h3 class="font-semibold">Comments ({{ comments.length }})</h3>
+    <p-button
+    class="tm-primary-outline"
+    label="Sort"
+    [outlined]="true"
+    severity="secondary"
+    icon="pi pi-sort-amount-up-alt"
+  />
+  </div>
+  <div class="comment-list">
+    <div *ngFor="let comment of comments" class="comment-item">
+      <p-avatar [image]="comment.avatar" size="normal" shape="circle"></p-avatar>
+      <div class="comment-content">
+        <div class="comment-header">
+          <span class="comment-author">{{ comment.author }}</span>
+          <span class="comment-time">• {{ comment.time }}</span>
+        </div>
+        <p>
+          <span class="mention">&commat;{{ comment.mention }}</span> {{ comment.text }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="input-container">
+    <input type="text" class="custom-input" placeholder="Type your message..." />
+    <div class="actions">
+      <i class="pi pi-upload upload-icon"></i>
+      <button pButton class="tm-primary-btn">Send</button>
+    </div>
+  </div>
+  
+</p-sidebar>

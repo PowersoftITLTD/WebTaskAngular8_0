@@ -1,0 +1,94 @@
+<div class="board-container">
+  @for (tasks of taskData | groupBy: 'Dashboard_Status'; track tasks) {
+    <div class="board-section">
+      <div
+        class="board-header flex align-items-center gap-2"
+        [class]="tasks.key?.split(' ').join('-')"
+      >
+        <span>
+          @if (tasks.key === 'Not Started') {
+            Not Started
+          } @else if (tasks.key === 'In Progress') {
+            In progress
+          } @else if (tasks.key === 'Completed') {
+            For Review
+          }
+        </span>
+        <p-badge [value]="tasks.value.length" severity="danger" />
+      </div>
+      <div class="board-content">
+        @for (task of tasks.value; track task) {
+          <div class="progress-card cursor-pointer" (click)="onCardClick(task)">
+            <div class="flex justify-content-between align-items-center mb-2">
+              <h2>{{ task.Task_Name ?? '--' }}</h2>
+              <!-- <a class="cursor-pointer">
+                <i class="pi pi-ellipsis-h"></i>
+              </a> -->
+              <p-menu
+                #menu
+                [model]="actions"
+                popup="true"
+                [appendTo]="'body'"
+                [style]="{ 'font-size': '14px' }"
+              ></p-menu>
+              <i
+                class="pi pi-ellipsis-v"
+                (click)="menu.toggle($event); showActionBtn($event, task)"
+              ></i>
+            </div>
+            <p class="description mb-3" [innerHTML]="task.Task_Description"></p>
+            <div class="flex justify-content-between align-items-center mb-2">
+              <div class="date-badge flex align-items-center gap-2">
+                <i class="pi pi-calendar"></i>
+                {{ task.Completion_Date ?? '--' }}
+              </div>
+              <!-- <div class="profile-pics">
+                @for (img of task.profileUrls; track $index) {
+                  <img width="24" height="24" loading="lazy" [src]="img" alt="" />
+                }
+              </div> -->
+            </div>
+            <!-- <div class="assignee mb-2">
+              <div>
+                <span class="initials">
+                  {{ task?.Creator | shortName }}
+                </span>
+                {{ task?.Creator }}
+              </div>
+              @if (task?.Responsible && task?.Creator !== task?.Responsible) {
+                >
+                <div>
+                  <span class="initials orange">
+                    {{ task?.Responsible | shortName }}
+                  </span>
+                  {{ task?.Responsible }}
+                </div>
+              }
+            </div> -->
+            <div class="flex justify-content-between align-items-center">
+              <!-- priority: high, low or medium -->
+              <div class="priority" [class]="task.Priority?.toLowerCase()">
+                <i class="pi pi-flag-fill"></i>
+                @if (task?.Priority) {
+                  {{ task.Priority }}
+                } @else {
+                  --
+                }
+              </div>
+              <div class="flex align-items-center gap-2">
+                <div class="badge sub-task-badge">
+                  <i class="pi pi-sitemap"></i>
+                  {{ task.Subtask_Count ?? '--' }}
+                </div>
+                <div class="badge progress-badge">
+                  <i class="pi pi-clock"></i>
+                  {{ task.Progress_Percentage ?? '--' }} %
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

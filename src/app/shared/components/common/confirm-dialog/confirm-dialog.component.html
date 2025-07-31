@@ -1,0 +1,33 @@
+<p-dialog
+  header=""
+  [(visible)]="showDialog"
+  [closable]="true"
+  [modal]="true"
+  [style]="{ width: '472px' }"
+  (onHide)="onHide()"
+  class="confirm-dialog"
+>
+  <div class="dialog-content">
+    <div class="icon-container" [ngClass]="{ warning: type === 'warning' }">
+      <img [src]="'/assets/confirm-dialog/' + icon + '.svg'" [alt]="icon + '-icon'" />
+    </div>
+    <p class="title">
+      {{ title }}
+    </p>
+    <p class="message">
+      {{ message }}
+    </p>
+    <div class="button-container">
+      @if (!isDisabled) {
+        <button
+          pButton
+          type="button"
+          [label]="buttonLabel"
+          class="send-button"
+          (click)="onClick($event)"
+          [loading]="isButtonLoading"
+        ></button>
+      }
+    </div>
+  </div>
+</p-dialog>

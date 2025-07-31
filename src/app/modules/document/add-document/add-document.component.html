@@ -1,0 +1,103 @@
+<p-sidebar
+  [(visible)]="sidebarVisible"
+  position="right"
+  [showCloseIcon]="false"
+  [dismissible]="true"
+  (onHide)="onSidebarHide()"
+  class="task-add"
+>
+  <ng-template pTemplate="header">
+    <div class="w-full flex justify-content-between align-items-center">
+      <h2 class="font-semibold">Add Document</h2>
+      <div class="flex align-items-center gap-2">
+        <button
+          pButton
+          class="tm-primary-outline"
+          [outlined]="true"
+          severity="secondary"
+          (click)="onCancel()"
+        >
+          Cancel
+        </button>
+        <button pButton class="tm-primary-btn" (click)="onSave()">Save</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <form [formGroup]="projectForm">
+    <div>
+      <h3>Depository Details</h3>
+    </div>
+    <div class="p-3 border-round-md border-1 surface-border mt-3">
+      <div class="flex justify-content-between mt-2">
+        <div class="flex flex-column">
+          <label class="mb-1">Properties</label>
+          <p-dropdown
+            [options]="properties"
+            formControlName="property"
+            styleClass="w-28rem"
+          ></p-dropdown>
+        </div>
+        <div class="flex flex-column">
+          <label class="mb-1">Building</label>
+          <p-dropdown
+            [options]="buildings"
+            formControlName="building"
+            styleClass="w-28rem"
+          ></p-dropdown>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <div class="flex flex-column">
+          <label class="mb-1">Document Abbr / Document name</label>
+          <p-dropdown
+            [options]="documents"
+            formControlName="document"
+            styleClass="w-28rem"
+          ></p-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-3 border-round-md border-1 surface-border mt-3">
+      <div class="grid mt-2 mb-5">
+        <div class="col-6">
+          <label class="block mb-1">PAN Number</label>
+          <input
+            type="text"
+            pInputText
+            formControlName="panNumber"
+            style="width: -webkit-fill-available"
+          />
+        </div>
+        <div class="col-6">
+          <label class="block mb-1">Issuing Date</label>
+          <p-calendar
+            formControlName="issuingDate"
+            [iconDisplay]="'input'"
+            [showIcon]="true"
+            inputId="icondisplay"
+            [dateFormat]="'dd M yy'"
+          />
+        </div>
+
+        <div class="col-12 mt-3">
+          <label class="block mb-1">Upload Documents</label>
+          <div class="custom-file-upload" (click)="triggerFileUpload()">
+            <i class="pi pi-upload"></i>
+            <label for="fileInput" class="upload-label">
+              <span *ngIf="!selectedFileNames.length">Drag & Drop or browse to Upload</span>
+              <p class="file-types" *ngIf="!selectedFileNames.length">PNG, JPG, JPEG (max. 4mb)</p>
+              <span *ngIf="selectedFileNames.length">{{ selectedFileNames }}</span>
+            </label>
+            <input type="file" #fileInput (change)="onFileSelected($event)" multiple />
+            <button class="browse-btn" (click)="triggerFileUpload(); $event.stopPropagation()">
+              Browse files
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</p-sidebar>

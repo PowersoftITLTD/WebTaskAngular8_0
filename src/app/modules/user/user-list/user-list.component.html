@@ -1,0 +1,18 @@
+<div>
+  <span class="title">User ({{ userList.length }})</span>
+</div>
+<div class="mb-3 mt-3">
+  <app-tm-advance-search
+    [showButton]="true"
+    [buttonLabel]="'New User'"
+    (onButtonClick)="navigateToAddUser()"
+  ></app-tm-advance-search>
+</div>
+<app-tm-table
+  [columns]="columns"
+  [data]="userList"
+  [selectable]="true"
+  [status]="true"
+  [loading]="false"
+  (onViewDetails)="handleViewDetails($event)"
+></app-tm-table>

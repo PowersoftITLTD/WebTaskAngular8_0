@@ -1,0 +1,45 @@
+
+<div class="card flex justify-content-center">
+  <p-breadcrumb 
+      class="max-w-full w-full-new" 
+      [model]="items"  />
+</div>
+<div class="container">
+  <!-- Project Summary Card -->
+  <!-- project delete & edit -->
+   <div>
+    <app-tm-edit></app-tm-edit>
+   </div>
+  <!-- Property Card -->
+  <div class="mb-3">
+    <app-property-card></app-property-card>
+  </div>
+
+  <!-- Tabs -->
+  <app-tm-tabs
+    [tabs]="tabList"
+    [counts]="tabCounts"
+    (tabChanged)="onTabChange($event)"
+    [activeTab]="currentTab"
+    [showCount]="true"
+  >
+  </app-tm-tabs>
+
+  <!-- Advance Search -->
+  <div class="mb-3 mt-3">
+    <app-tm-advance-search [showButton]="false"></app-tm-advance-search>
+  </div>
+
+  <!-- Status Cards -->
+  <div class="mb-3">
+    <app-status-card></app-status-card>
+  </div>
+
+  <!-- Cards -->
+  @for (data of dataList; track $index) {
+    <div class="mb-2">
+      <app-progress-card [data]="data"></app-progress-card>
+    </div>
+  }
+
+</div>

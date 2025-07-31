@@ -1,0 +1,20 @@
+<div class="advance-search">
+  <div class="search">
+    <p-iconField iconPosition="left">
+      <p-inputIcon styleClass="pi pi-search" />
+      <input type="text" pInputText placeholder="Search" />
+    </p-iconField>
+  </div>
+  <div class="search-right">
+    <p-button
+      class="tm-primary-outline"
+      label="Filter"
+      [outlined]="true"
+      severity="secondary"
+      icon="pi pi-filter"
+    />
+    @if (showButton) {
+      <p-button class="tm-primary-btn" [label]="buttonLabel"  (click)="onButtonClick.emit()" icon="pi pi-plus" />
+    }
+  </div>
+</div>

@@ -1,0 +1,192 @@
+<div class="table-container">
+  <table class="custom-table">
+    <thead>
+      <tr>
+        @if (selectable) {
+          <th>
+            <input
+              type="checkbox"
+              class="custom-checkbox"
+              [(ngModel)]="allSelected"
+              [indeterminate]="indeterminate"
+              (change)="toggleSelectAll($event)"
+            />
+          </th>
+        }
+        @for (col of columns; track col) {
+          <th (click)="sortBy(col.sortKey)">
+            {{ col.header }}
+            @if (currentSortField === col.sortKey) {
+              <span class="inline-block">
+                <i
+                  class="pi text-xs"
+                  [ngClass]="{
+                    'pi-sort-amount-up': sortDirection === 'asc',
+                    'pi-sort-amount-down': sortDirection === 'desc',
+                  }"
+                ></i>
+              </span>
+            } @else {
+              @if (col.sortKey) {
+                <span class="order-icon">
+                  <i class="pi pi-sort-amount-up text-xs"></i>
+                </span>
+              }
+            }
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Skeleton loading rows -->
+      @if (loading) {
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <tr>
+            @if (selectable) {
+              <td>
+                <p-skeleton width="20px" height="20px" shape="square"></p-skeleton>
+              </td>
+            }
+            @for (col of columns; track col) {
+              <td>
+                @if ($last) {
+                  <p-skeleton width="20px" height="20px" shape="circle"></p-skeleton>
+                } @else {
+                  <p-skeleton width="100%" height="20px"></p-skeleton>
+                }
+              </td>
+            }
+          </tr>
+        }
+      } @else {
+        @for (item of data; track item; let index = $index) {
+          <tr (click)="viewDetails(item)" [ngClass]="{ canceled: !!item?.isCancel }">
+            @if (selectable) {
+              <td>
+                <input
+                  type="checkbox"
+                  class="custom-checkbox"
+                  [(ngModel)]="item.selected"
+                  (change)="updateSelection()"
+                  (click)="$event.stopPropagation()"
+                />
+              </td>
+            }
+            @if (!item.isExpandable) {
+              @for (col of columns; track col) {
+                <td>
+                  @if (col.isNested && col.nestedFields?.length) {
+                    <!-- Handle nested fields -->
+                    @for (nestedField of col.nestedFields; track nestedField) {
+                      <div>
+                        <span>
+                          @if (col.pipe) {
+                            {{ applyPipe(item[nestedField], col.pipe, col.pipeParams) || '-' }}
+                          } @else {
+                            {{ item[nestedField] }}
+                          }
+                        </span>
+                      </div>
+                    }
+                  } @else {
+                    @if (status) {
+                      <div>
+                        @if (col.field && col.statusField) {
+                          <span [ngClass]="getStatusClass(item[col.field])">
+                            {{ item[col.field] || '-' }}
+                          </span>
+                        }
+                      </div>
+                    }
+                    @if (col.field && !col.statusField) {
+                      <span>
+                        @if (col.pipe) {
+                          {{ applyPipe(item[col.field], col.pipe, col.pipeParams) || '-' }}
+                        } @else {
+                          @if (col.field === 'index') {
+                            {{ index + 1 }}
+                          } @else {
+                            {{ item[col.field] }}
+                          }
+                        }
+                      </span>
+                    }
+                  }
+                  @if (col.isAction) {
+                    <!-- Render action column based on isAction -->
+                    @if (customAction) {
+                      <p-menu
+                        #menu
+                        [model]="customAction"
+                        popup="true"
+                        [appendTo]="'body'"
+                        [style]="{ 'font-size': '14px' }"
+                      ></p-menu>
+                      <i
+                        class="pi pi-ellipsis-v"
+                        (click)="
+                          menu.toggle($event); emitSelectedItem(item); $event.stopPropagation()
+                        "
+                      ></i>
+                    } @else {
+                      <p-menu
+                        #menu
+                        [model]="actions"
+                        popup="true"
+                        [appendTo]="'body'"
+                        [style]="{ 'font-size': '14px' }"
+                      ></p-menu>
+                      <i
+                        class="pi pi-ellipsis-v"
+                        (click)="menu.toggle($event); selectedItem = item; $event.stopPropagation()"
+                      ></i>
+                    }
+                  }
+                  @if (col.isSwitch) {
+                    <!-- Render switch column based on isSwitch -->
+                    <p-inputSwitch
+                      [(ngModel)]="item.isActive"
+                      (onChange)="toggleSwitch($event, item)"
+                      (click)="$event.stopPropagation()"
+                    />
+                  }
+                </td>
+              }
+            } @else {
+              <td [attr.colspan]="columns.length" class="p-0">
+                <p-treeTable [value]="item['task']" [scrollable]="true">
+                  <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+                    <tr [ttRow]="rowNode">
+                      @for (localobj of nestedColumns; track localobj; let k = $index) {
+                        <td class="tree-table-cell">
+                          @if (k == 0 && localobj.isColumnVisible && localobj.field) {
+                            <p-treeTableToggler [rowNode]="rowNode" />
+                            {{ rowData[localobj.field] }}
+                          } @else {
+                            <span *ngIf="localobj.isColumnVisible">
+                              {{ rowData.label }}
+                            </span>
+                          }
+                        </td>
+                      }
+                      <!-- <td class="new_width text-center"></td>
+                      <td class="new_width text-center"></td>
+                      <td class="new_width text-center"></td>
+                      <td class="new_width text-center"></td>
+                      <td class="new_width text-center"></td>
+                      <td class="new_width text-center"></td>
+                      <td class="new_width text-center" colspan="4"></td>
+                      <td class="new_width text-center" style="width: 6%;"></td> -->
+                    </tr>
+                  </ng-template>
+                </p-treeTable>
+              </td>
+            }
+          </tr>
+        } @empty {
+          <td [colSpan]="columns.length + 1" class="text-center">No Data Found</td>
+        }
+      }
+    </tbody>
+  </table>
+</div>

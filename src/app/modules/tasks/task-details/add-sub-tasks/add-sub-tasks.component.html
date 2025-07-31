@@ -1,0 +1,598 @@
+<p-sidebar
+  [(visible)]="sidebarVisible"
+  position="right"
+  [showCloseIcon]="false"
+  [dismissible]="true"
+  (onHide)="onSidebarHide()"
+  class="task-add"
+>
+  <ng-template pTemplate="header">
+    <div class="w-full flex justify-content-between align-items-center">
+      <h2 class="font-semibold">New Task</h2>
+      <div class="flex align-items-center gap-2">
+        <button
+          pButton
+          class="tm-primary-outline"
+          [outlined]="true"
+          severity="secondary"
+          (click)="onCancel()"
+        >
+          Cancel
+        </button>
+        <button pButton class="tm-primary-btn" (click)="onCreate()">Create Task</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="content">
+    <div class="formgrid grid">
+      <div class="field col-12">
+        <label for="taskName">Task Name</label>
+        <input pInputText id="taskName" class="w-full" placeholder="Enter Task Name" />
+      </div>
+      <div class="field col-12">
+        <label for="description">Description</label>
+        <p-editor id="description" [style]="{ height: '140px' }"></p-editor>
+      </div>
+      <div class="field col-12 flex gap-2 flex-wrap">
+        <!-- Property -->
+        <div>
+          <a
+            class="outline-overlay-btn"
+            (click)="property.toggle($event)"
+            [ngClass]="{ active: selectedProperty }"
+          >
+            <i class="pi pi-home"></i>
+            <span class="font-semibold text-700">
+              @if (selectedProperty) {
+                {{ selectedProperty }}
+              } @else {
+                Property
+              }
+            </span>
+          </a>
+          <p-overlayPanel #property styleClass="task-add">
+            <p-listbox
+              [options]="properties"
+              [(ngModel)]="selectedProperty"
+              optionLabel="name"
+              optionValue="name"
+              [filter]="true"
+              [style]="{ width: '250px' }"
+              (onChange)="property.toggle($event)"
+            />
+          </p-overlayPanel>
+        </div>
+        <!-- Building -->
+        <div>
+          <a
+            class="outline-overlay-btn"
+            (click)="building.toggle($event)"
+            [ngClass]="{ active: selectedBuilding }"
+          >
+            <i class="pi pi-building"></i>
+            <span class="font-semibold text-700">
+              @if (selectedBuilding) {
+                {{ selectedBuilding }}
+              } @else {
+                Building
+              }
+            </span>
+          </a>
+          <p-overlayPanel #building styleClass="task-add">
+            <p-listbox
+              [options]="properties"
+              [(ngModel)]="selectedBuilding"
+              optionLabel="name"
+              optionValue="name"
+              [filter]="true"
+              [style]="{ width: '250px' }"
+              (onChange)="building.toggle($event)"
+            />
+          </p-overlayPanel>
+        </div>
+        <!-- Checklist -->
+        <div>
+          <a class="outline-overlay-btn" (click)="showCheckList = !showCheckList">
+            <i class="pi pi-check-square"></i>
+            <span class="font-semibold text-700"> Checklist </span>
+          </a>
+        </div>
+        <!-- Assignee -->
+        <div>
+          <a
+            class="outline-overlay-btn"
+            (click)="assignee.toggle($event)"
+            [ngClass]="{ active: selectedAssignee }"
+          >
+            <i class="pi pi-user"></i>
+            <span class="font-semibold text-700">
+              @if (selectedAssignee) {
+                {{ selectedAssignee }}
+              } @else {
+                Assignee
+              }
+            </span>
+          </a>
+          <p-overlayPanel #assignee styleClass="task-add">
+            <p-listbox
+              [options]="properties"
+              [(ngModel)]="selectedAssignee"
+              optionLabel="name"
+              optionValue="name"
+              [filter]="true"
+              [style]="{ width: '250px' }"
+              (onChange)="assignee.toggle($event)"
+            />
+          </p-overlayPanel>
+        </div>
+        <!-- Completion Date -->
+        <div>
+          <a
+            class="outline-overlay-btn"
+            (click)="completionDate.toggle($event)"
+            [ngClass]="{ active: selectedCompletionDate }"
+          >
+            <i class="pi pi-calendar"></i>
+            <span class="font-semibold text-700">
+              @if (selectedCompletionDate) {
+                {{ selectedCompletionDate | date: 'dd MMM y' }}
+              } @else {
+                Completion Date
+              }
+            </span>
+          </a>
+          <p-overlayPanel #completionDate styleClass="task-add">
+            <div class="completion-date">
+              <div class="days flex justify-content-between align-items-center">
+                <p>No. of Days</p>
+                <input
+                  type="number"
+                  min="0"
+                  pInputText
+                  class="max-w-4rem"
+                  [(ngModel)]="numberOfDays"
+                  (input)="updateCalendar()"
+                />
+              </div>
+              <div class="calendar">
+                <p-calendar
+                  class="max-w-full"
+                  [inline]="true"
+                  [(ngModel)]="selectedDate"
+                  (onSelect)="updateDays()"
+                  [minDate]="todayDate"
+                />
+              </div>
+              <div class="actions">
+                <button
+                  pButton
+                  class="tm-primary-outline justify-content-center"
+                  [outlined]="true"
+                  severity="secondary"
+                  (click)="resetValues(); completionDate.toggle($event)"
+                >
+                  Cancel
+                </button>
+                <button
+                  pButton
+                  class="tm-primary-btn justify-content-center"
+                  (click)="confirmSelection(); completionDate.toggle($event)"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          </p-overlayPanel>
+        </div>
+        <!-- Dropdown -->
+        <div>
+          <a class="outline-overlay-btn" (click)="dropdown.toggle($event)">
+            <i class="pi pi-plus"></i>
+          </a>
+          <p-overlayPanel #dropdown styleClass="task-add">
+            <ul class="dropdown-list">
+              <!-- Outcome -->
+              <li
+                (click)="dropdown.toggle($event); showOutcome = !showOutcome"
+                class="dropdown-list-item"
+              >
+                <i class="pi pi-building"></i>
+                Outcome
+              </li>
+              <!-- Authority -->
+              <li
+                (click)="dropdown.toggle($event); showAuthority = !showAuthority"
+                class="dropdown-list-item"
+              >
+                <i class="pi pi-building"></i>
+                Authority
+              </li>
+              <!-- Dates -->
+              <li (click)="date.toggle($event)" class="dropdown-list-item">
+                <i class="pi pi-calendar"></i>
+                Dates
+              </li>
+              <p-overlayPanel #date styleClass="task-add">
+                <div class="completion-date">
+                  <div class="tentative-dates">
+                    <p class="mb-1 text-black-alpha-50">Tentative Dates</p>
+                    <div class="grid mb-2">
+                      <div class="col">
+                        <label>Start Date</label>
+                        <div class="mt-1 w-full">
+                          <p-calendar
+                            placeholder="Select Date"
+                            dateFormat="dd M yy"
+                            [(ngModel)]="tentativeStartDate"
+                            (ngModelChange)="tentativeEndDate = null"
+                          />
+                        </div>
+                      </div>
+                      <div class="col-1 flex justify-content-center align-items-center">
+                        <i class="pi pi-arrow-right"></i>
+                      </div>
+                      <div class="col">
+                        <label>End Date</label>
+                        <div class="mt-1 w-full">
+                          <p-calendar
+                            placeholder="Select Date"
+                            dateFormat="dd M yy"
+                            [(ngModel)]="tentativeEndDate"
+                            [minDate]="tentativeStartDate"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <p class="mb-1 text-black-alpha-50">Actual Dates</p>
+                    <div class="grid">
+                      <div class="col">
+                        <label>Start Date</label>
+                        <div class="mt-1 w-full">
+                          <p-calendar
+                            placeholder="Select Date"
+                            dateFormat="dd M yy"
+                            [(ngModel)]="actualStartDate"
+                            (ngModelChange)="actualEndDate = null"
+                          />
+                        </div>
+                      </div>
+                      <div class="col-1 flex justify-content-center align-items-center">
+                        <i class="pi pi-arrow-right"></i>
+                      </div>
+                      <div class="col">
+                        <label>End Date</label>
+                        <div class="mt-1 w-full">
+                          <p-calendar
+                            placeholder="Select Date"
+                            dateFormat="dd M yy"
+                            [(ngModel)]="actualEndDate"
+                            [minDate]="actualStartDate"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="calendar">
+                    <p-calendar
+                      class="max-w-full"
+                      [inline]="true"
+                      [(ngModel)]="selectedDate"
+                      (onSelect)="updateDays()"
+                      selectionMode="range"
+                    />
+                  </div> -->
+                  <div class="actions">
+                    <button
+                      pButton
+                      class="tm-primary-outline justify-content-center"
+                      [outlined]="true"
+                      severity="secondary"
+                      (click)="resetValues(); date.toggle($event)"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      pButton
+                      class="tm-primary-btn justify-content-center"
+                      (click)="confirmSelection(); date.toggle($event)"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </p-overlayPanel>
+              <!-- Category -->
+              <li (click)="category.toggle($event)" class="dropdown-list-item">
+                <i class="pi pi-th-large"></i>
+                Category
+                @if (selectedCategory) {
+                  <p-badge [value]="1" severity="secondary" />
+                }
+              </li>
+              <p-overlayPanel #category styleClass="task-add">
+                <p-listbox
+                  [options]="properties"
+                  [(ngModel)]="selectedCategory"
+                  optionLabel="name"
+                  optionValue="name"
+                  [filter]="true"
+                  [style]="{ width: '250px' }"
+                  (onChange)="category.toggle($event)"
+                />
+              </p-overlayPanel>
+              <!-- Type -->
+              <li (click)="type.toggle($event)" class="dropdown-list-item">
+                <i class="pi pi-th-large"></i>
+                Type
+                @if (selectedType) {
+                  <p-badge [value]="1" severity="secondary" />
+                }
+              </li>
+              <p-overlayPanel #type styleClass="task-add">
+                <p-listbox
+                  [options]="properties"
+                  [(ngModel)]="selectedType"
+                  optionLabel="name"
+                  optionValue="name"
+                  [filter]="true"
+                  [style]="{ width: '250px' }"
+                  (onChange)="type.toggle($event)"
+                />
+              </p-overlayPanel>
+              <!-- Priority -->
+              <li (click)="priority.toggle($event)" class="dropdown-list-item">
+                <i class="pi pi-flag"></i>
+                Priority
+                @if (selectedPriority) {
+                  <p-badge [value]="1" severity="secondary" />
+                }
+              </li>
+              <p-overlayPanel #priority styleClass="task-add">
+                <p-listbox
+                  [options]="priorityList"
+                  [(ngModel)]="selectedPriority"
+                  optionLabel="name"
+                  optionValue="name"
+                  [style]="{ width: '200px' }"
+                  (onChange)="priority.toggle($event)"
+                >
+                  <ng-template let-priorityItem pTemplate="item">
+                    <div class="flex align-items-center">
+                      <i class="pi pi-flag-fill" [ngStyle]="{ color: priorityItem.color }"></i>
+                      <span class="ml-2">{{ priorityItem.name }}</span>
+                    </div>
+                  </ng-template>
+                </p-listbox>
+              </p-overlayPanel>
+              <!-- Tags -->
+              <li (click)="tags.toggle($event)" class="dropdown-list-item">
+                <i class="pi pi-tag"></i>
+                Tags
+                @if (selectedTag) {
+                  <p-badge [value]="1" severity="secondary" />
+                }
+              </li>
+              <p-overlayPanel #tags styleClass="task-add">
+                <p-listbox
+                  [options]="properties"
+                  [(ngModel)]="selectedTag"
+                  optionLabel="name"
+                  optionValue="name"
+                  [filter]="true"
+                  [style]="{ width: '200px' }"
+                  (onChange)="tags.toggle($event)"
+                />
+              </p-overlayPanel>
+            </ul>
+          </p-overlayPanel>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checklist -->
+    @if (showCheckList) {
+      <div class="container-add mt-3">
+        <div class="flex align-items-center justify-content-end gap-2 mb-3">
+          <button pButton class="tm-primary-btn" (click)="showCheckList = false">Save</button>
+          <button
+            pButton
+            class="tm-primary-outline"
+            [outlined]="true"
+            severity="secondary"
+            (click)="showCheckList = false"
+          >
+            Cancel
+          </button>
+        </div>
+        <!-- Table -->
+        <div>
+          <div class="grid">
+            <div class="col-4">
+              <div class="side-pannel">
+                <!-- Search Bar -->
+                <p-iconField iconPosition="left">
+                  <p-inputIcon styleClass="pi pi-search" />
+                  <input
+                    type="text"
+                    pInputText
+                    placeholder="Search"
+                    [(ngModel)]="searchQuery"
+                    class="w-full mb-2"
+                  />
+                </p-iconField>
+
+                <!-- Category Sections -->
+                <p-accordion [activeIndex]="0">
+                  <p-accordionTab
+                    *ngFor="let category of categories"
+                    [iconPos]="'end'"
+                    tabStyleClass="mb-2"
+                  >
+                    <ng-template pTemplate="header">
+                      <div class="">
+                        <span>{{ category.name }}</span>
+                      </div>
+                    </ng-template>
+
+                    <div *ngFor="let item of category.items" class="list-item">
+                      <p-checkbox [(ngModel)]="item.selected" [binary]="true"></p-checkbox>
+                      <label class="">{{ item.name }}</label>
+                    </div>
+                  </p-accordionTab>
+                </p-accordion>
+              </div>
+            </div>
+            <div class="col-8">
+              <app-tm-table
+                [columns]="checkListTableColumns"
+                [data]="checkListTableData"
+                [selectable]="false"
+                [status]="false"
+              >
+              </app-tm-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Outcome -->
+    @if (showOutcome) {
+      <div class="container-add mt-3">
+        <div class="flex align-items-center justify-content-end gap-2 mb-3">
+          <button pButton class="tm-primary-btn" (click)="showOutcome = false">Save</button>
+          <button
+            pButton
+            class="tm-primary-outline"
+            [outlined]="true"
+            severity="secondary"
+            (click)="showOutcome = false"
+          >
+            Cancel
+          </button>
+        </div>
+        <!-- Table -->
+        <div>
+          <div class="grid">
+            <div class="col-4">
+              <div class="side-pannel">
+                <!-- Search Bar -->
+                <p-iconField iconPosition="left">
+                  <p-inputIcon styleClass="pi pi-search" />
+                  <input
+                    type="text"
+                    pInputText
+                    placeholder="Search"
+                    [(ngModel)]="searchQuery"
+                    class="w-full mb-2"
+                  />
+                </p-iconField>
+
+                <!-- Category Sections -->
+                <p-accordion [activeIndex]="0">
+                  <p-accordionTab
+                    *ngFor="let category of categories"
+                    [iconPos]="'end'"
+                    tabStyleClass="mb-2"
+                  >
+                    <ng-template pTemplate="header">
+                      <div class="">
+                        <span>{{ category.name }}</span>
+                      </div>
+                    </ng-template>
+
+                    <div *ngFor="let item of category.items" class="list-item">
+                      <p-checkbox [(ngModel)]="item.selected" [binary]="true"></p-checkbox>
+                      <label class="">{{ item.name }}</label>
+                    </div>
+                  </p-accordionTab>
+                </p-accordion>
+              </div>
+            </div>
+            <div class="col-8">
+              <app-tm-table
+                [columns]="checkListTableColumns"
+                [data]="checkListTableData"
+                [selectable]="false"
+                [status]="false"
+              >
+              </app-tm-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Authority -->
+    @if (showAuthority) {
+      <div class="container-add mt-3">
+        <div class="flex align-items-center justify-content-end gap-2 mb-3">
+          <button pButton class="tm-primary-btn" (click)="showAuthority = false">Save</button>
+          <button
+            pButton
+            class="tm-primary-outline"
+            [outlined]="true"
+            severity="secondary"
+            (click)="showAuthority = false"
+          >
+            Cancel
+          </button>
+        </div>
+        <div class="authority-add mb-3">
+          <div class="formgrid grid">
+            <div class="field col-12 md:col-2">
+              <label for="level">Level</label>
+              <input id="level" type="text" placeholder="Enter Level" pInputText class="w-full" />
+            </div>
+            <div class="field col-12 md:col-4">
+              <label for="SanctioningDepartment">Sanctioning Department</label>
+              <input
+                id="SanctioningDepartment"
+                type="text"
+                placeholder="Enter Sanctioning Department"
+                pInputText
+                class="w-full"
+              />
+            </div>
+            <div class="field col-12 md:col-4">
+              <label for="SanctioningAuthority">Sanctioning Authority</label>
+              <input
+                id="SanctioningAuthority"
+                type="text"
+                placeholder="Enter Sanctioning Authority"
+                pInputText
+                class="w-full"
+              />
+            </div>
+            <div class="field col-12 md:col-2">
+              <label for="Mode">Mode</label>
+              <div class="w-ful">
+                <p-inputSwitch />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <button
+            pButton
+            class="tm-primary-outline"
+            [outlined]="true"
+            label="Add"
+            icon="pi pi-plus"
+            severity="secondary"
+          ></button>
+        </div>
+
+        <app-tm-table
+          [columns]="authorityTableColumns"
+          [data]="authorityTableData"
+          [selectable]="false"
+          [status]="false"
+        >
+        </app-tm-table>
+      </div>
+    }
+  </ng-template>
+</p-sidebar>

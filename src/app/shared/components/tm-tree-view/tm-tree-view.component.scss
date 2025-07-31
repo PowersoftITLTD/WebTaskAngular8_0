@@ -1,0 +1,18 @@
+::ng-deep .p-treenode-label {
+    width: 100%;
+  }
+
+  ::ng-deep .custom-class  {
+    .p-tree {
+        font-size: 14px;
+        padding: 0px;
+        border: 0;
+        color: #2d3748;
+        background: transparent;
+        .p-tree-container .p-treenode .p-treenode-content .p-tree-toggler {
+            transform: scale(0.8);
+          }
+    }
+  }
+  
+  

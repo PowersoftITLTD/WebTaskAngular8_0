@@ -1,0 +1,190 @@
+// Action Bar (tital)
+.title {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0;
+    line-height: 24.2px;
+  }
+  
+  .p-button {
+    font-size: 0.875rem;
+    padding: 0.5rem 1.5rem;
+  }
+  
+  .p-button-approval {
+    background-color: #007bff;
+    border: none;
+    padding: 6px 13px;
+    font-size: 14px;
+    color: white;
+    border-radius: 8px;
+    line-height: 22.4px;
+  }
+  
+  .new-pocket-add-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .add-more-button {
+    font-size: 12px;
+    line-height: 16.8px;
+    padding: 6px 12px;
+    background: #fff;
+    color: #0b66e4;
+    font-weight: 500;
+  }
+  
+  ::ng-deep .p-button .p-button-icon-left {
+    font-size: 12px;
+  }
+  
+  ::ng-deep .custom-dropdown .p-dropdown-item {
+    font-size: 14px;
+  }
+  
+  input::placeholder,
+  textarea::placeholder {
+    font-size: 14px;
+  }
+  
+  .stepper {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px 10px;
+  }
+  
+  .input-validation {
+    display: flex;
+    align-items: end;
+    font-size: 14px;
+    color: #b39090;
+  }
+  
+  .input-validation span {
+    color: #382525;
+  }
+  
+  .p-fluid .field label {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 19.6px;
+  }
+  
+  // assign role css
+  
+  .role-details {
+    margin-top: 15px;
+    margin-right: -0.5rem;
+    margin-left: -0.5rem;
+  }
+  
+  h3 {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 19.6px;
+    margin-left: 10px;
+  }
+  
+  .role-row {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin-bottom: 1em;
+    border: 1px solid #d8cfcf;
+    border-radius: 8px;
+    margin-top: 1em;
+  }
+  
+  .form-group {
+    flex: 1;
+  }
+  
+  label {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 19.6px;
+  }
+  
+  .remove-btn {
+    // background: #e74c3c;
+    color: #382525;
+    border: none;
+    padding: 0.5em 1em;
+    cursor: pointer;
+  }
+  
+  .add-role-btn {
+    background: #fff;
+    color: black;
+    border: 1px solid #c1c1c1;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  
+  .p-dropdown .p-dropdown-label.p-placeholder {
+    font-size: 14px !important;
+  }
+  
+  .p-multiselect {
+    font-size: 14px !important;
+  }
+  
+  .p-multiselect-panel .p-multiselect-items .p-multiselect-item:first-child {
+    font-size: 14px !important;
+  }
+  
+  // save  dialog css
+  .dialog-content {
+    text-align: center;
+  }
+  
+  .icon-container {
+    background-color: #f0f7ff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+  }
+  
+  .pi-send {
+    font-size: 24px;
+    color: #4285f4;
+  }
+  
+  .message {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 500;
+    line-height: 24.2px;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }
+  
+  .send-button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+  }
+  
+  .send-button:hover {
+    background-color: #155ab7;
+  }
+  
+  .p-dialog .p-dialog-header {
+    padding: 10px;
+  }
+  

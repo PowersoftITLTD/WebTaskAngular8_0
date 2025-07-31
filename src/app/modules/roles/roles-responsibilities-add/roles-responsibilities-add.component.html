@@ -1,0 +1,263 @@
+<!-- Breadcrum section -->
+<app-breadcrumbs [breadcrumbItems]="breadcrumbs"></app-breadcrumbs>
+
+<!-- Action Bar -->
+
+<div class="role-creation-containers">
+  <div class="header">
+    <h2 class="manager">
+      @if (onEditPage) {
+        {{ roleDetail?.[0]?.roleName }}
+      } @else {
+        New Role Creation
+      }
+    </h2>
+    <!-- <button class="save-btn" (click)="saveChanges()">
+      <img src="/assets/save-icon.svg" alt="" srcset="" /> Save
+    </button> -->
+    <app-button class="tm-primary-btn" [label]="'Save'" (onClick)="saveChanges()"></app-button>
+  </div>
+
+  <!-- Role Name Input -->
+  <form [formGroup]="roleForm">
+    <div class="role-name-container p-fluid">
+      <div class="md:col-4 p-0">
+        <label for="role-name">Role Name<span class="required">*</span></label>
+        <input
+          pInputText
+          type="text"
+          id="role-name"
+          placeholder="Enter Name"
+          formControlName="roleName"
+        />
+        @if (roleForm.get('roleName')?.invalid && roleForm.get('roleName')?.touched) {
+          <small class="text-red-600"> role name is required. </small>
+        }
+      </div>
+      <!-- Building Selection -->
+      <div class="form-group">
+        <label for="selectedBuilding">Select Building<span class="required">*</span></label>
+        <p-dropdown
+          id="selectedBuilding"
+          [options]="buildings"
+          formControlName="selectedBuilding"
+          placeholder="Select a Building"
+          styleClass="w-19rem"
+        ></p-dropdown>
+        @if (
+          roleForm.get('selectedBuilding')?.invalid && roleForm.get('selectedBuilding')?.touched
+        ) {
+          <small class="text-red-600">Building selection is required.</small>
+        }
+      </div>
+    </div>
+  </form>
+
+  <!-- Permissions Table -->
+  <form [formGroup]="permissionForm">
+    <div class="permissions-container">
+      <p>Select Module & rights to assign to this role.</p>
+
+      <div class="select-module-bar">
+        <div class="permissions-header">
+          <div class="module-column text-highlight">Module</div>
+          <div class="actions">
+            <div class="permission-column text-highlight">
+              <img
+                class="icon-img mr-2"
+                src="/assets/roles-responsibilities/read.svg"
+                alt="Read Icon"
+              />
+              <span class="read-label">Read</span>
+              <div class="action-item">
+                <input type="checkbox" formControlName="canRead" />
+              </div>
+            </div>
+            <div class="permission-column text-highlight">
+              <img
+                class="icon-img mr-2"
+                src="/assets/roles-responsibilities/edit.svg"
+                alt="Edit Icon"
+              />
+              <span class="write-label">Write</span>
+              <div class="action-item">
+                <input type="checkbox" formControlName="canWrite" />
+              </div>
+            </div>
+            <div class="permission-column text-highlight">
+              <img
+                class="icon-img mr-2"
+                src="/assets/roles-responsibilities/delete.svg"
+                alt="Delete Icon"
+              />
+              <span class="delete-label">Delete</span>
+              <div class="action-item">
+                <input type="checkbox" formControlName="canDelete" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Dashboard -->
+      <div class="scrollable-permissions">
+        <div class="module-group">
+          <div [formGroup]="getFormGroup(MODULES.DASHBOARD)" class="module">
+            <div class="module-name">Dashboard</div>
+            <div class="actions">
+              <div class="action-item">
+                <input type="checkbox" formControlName="canRead" />
+              </div>
+
+              <div class="action-item">
+                <input type="checkbox" formControlName="canWrite" />
+              </div>
+              <div class="action-item">
+                <input type="checkbox" formControlName="canDelete" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="module-group">
+          <div [formGroup]="getFormGroup(MODULES.TASKS)" class="module">
+            <div class="module-name">Tasks</div>
+            <div class="actions">
+              <div class="action-item">
+                <input type="checkbox" formControlName="canRead" />
+              </div>
+
+              <div class="action-item">
+                <input type="checkbox" formControlName="canWrite" />
+              </div>
+              <div class="action-item">
+                <input type="checkbox" formControlName="canDelete" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="module-group">
+          <div [formGroup]="getFormGroup(MODULES.DOCUMENT_DEPOSITORY)" class="module">
+            <div class="module-name">Document Depository</div>
+            <div class="actions">
+              <div class="action-item">
+                <input type="checkbox" formControlName="canRead" />
+              </div>
+
+              <div class="action-item">
+                <input type="checkbox" formControlName="canWrite" />
+              </div>
+              <div class="action-item">
+                <input type="checkbox" formControlName="canDelete" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Template Section -->
+        <div class="module-header">Template</div>
+
+        <!-- List of Template -->
+        <div class="module-group">
+          <div [formGroup]="getFormGroup(MODULES.APPROVAL_TEMPLATE)" class="module">
+            <div class="module-name">Approval Template</div>
+            <div class="actions">
+              <div class="action-item">
+                <input type="checkbox" formControlName="canRead" />
+              </div>
+
+              <div class="action-item">
+                <input type="checkbox" formControlName="canWrite" />
+              </div>
+              <div class="action-item">
+                <input type="checkbox" formControlName="canDelete" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Tentative & Actual Dates -->
+          <div [formGroup]="getFormGroup(MODULES.DOCUMENT_TEMPLATE)" class="module">
+            <div class="module-name">Document Template</div>
+            <div class="actions">
+              <div class="action-item">
+                <input type="checkbox" formControlName="canRead" />
+              </div>
+
+              <div class="action-item">
+                <input type="checkbox" formControlName="canWrite" />
+              </div>
+              <div class="action-item">
+                <input type="checkbox" formControlName="canDelete" />
+              </div>
+            </div>
+          </div>
+          <div [formGroup]="getFormGroup(MODULES.CATEGORIES)" class="module">
+            <div class="module-name">Categories</div>
+            <div class="actions">
+              <div class="action-item">
+                <input type="checkbox" formControlName="canRead" />
+              </div>
+
+              <div class="action-item">
+                <input type="checkbox" formControlName="canWrite" />
+              </div>
+              <div class="action-item">
+                <input type="checkbox" formControlName="canDelete" />
+              </div>
+            </div>
+          </div>
+          <div [formGroup]="getFormGroup(MODULES.INSTRUCTION)" class="module">
+            <div class="module-name">Instruction</div>
+            <div class="actions">
+              <div class="action-item">
+                <input type="checkbox" formControlName="canRead" />
+              </div>
+
+              <div class="action-item">
+                <input type="checkbox" formControlName="canWrite" />
+              </div>
+              <div class="action-item">
+                <input type="checkbox" formControlName="canDelete" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- data save dialog -->
+<p-dialog
+  header=""
+  [(visible)]="dataVisible"
+  [closable]="true"
+  [modal]="true"
+  [style]="{ width: '404px' }"
+>
+  <div class="dialog-content">
+    <div class="icon-container">
+      <svg
+        width="18"
+        height="25"
+        viewBox="0 0 18 25"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M16 0H2C1.46957 0 0.960859 0.210714 0.585786 0.585786C0.210714 0.960859 0 1.46957 0 2V24C8.87966e-05 24.1785 0.0479345 24.3537 0.138572 24.5074C0.22921 24.6611 0.359337 24.7878 0.51545 24.8743C0.671562 24.9607 0.847972 25.0039 1.02637 24.9992C1.20477 24.9944 1.37866 24.9421 1.53 24.8475L9 20.1787L16.4713 24.8475C16.6226 24.9418 16.7963 24.9939 16.9745 24.9984C17.1528 25.0029 17.3289 24.9598 17.4849 24.8733C17.6408 24.7869 17.7707 24.6603 17.8613 24.5068C17.9519 24.3532 17.9998 24.1783 18 24V2C18 1.46957 17.7893 0.960859 17.4142 0.585786C17.0391 0.210714 16.5304 0 16 0ZM16 22.1963L9.52875 18.1525C9.36982 18.0532 9.18617 18.0005 8.99875 18.0005C8.81133 18.0005 8.62768 18.0532 8.46875 18.1525L2 22.1963V2H16V22.1963Z"
+          fill="#0B66E4"
+        />
+      </svg>
+    </div>
+    <p class="message" style="margin-bottom: 18px">Are you sure you want to save this role?</p>
+    <p style="margin-top: -7px">You can always edit it later</p>
+    <div class="button-container">
+      <button
+        pButton
+        type="button"
+        label="Yes, Save"
+        class="send-button"
+        (click)="saveData()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>

@@ -1,0 +1,127 @@
+@import 'variables';
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  max-width: 100%;
+  display: block;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+  border: 1px solid $light-border-color;
+  background-color: #fdfdfd;
+  min-width: 600px;
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
+
+  th,
+  td {
+    padding: 10px 12px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid $light-border-color;
+    border-right: 1px solid $light-border-color;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  th {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16.8px;
+    user-select: none;
+    background-color: white;
+    border-top: none;
+
+    .order-icon {
+      visibility: hidden;
+    }
+
+    &:hover {
+      .order-icon {
+        visibility: visible;
+
+        i {
+          color: #888;
+        }
+      }
+    }
+  }
+
+  td {
+    color: #2d3748;
+  }
+
+  tr {
+    &:hover {
+      background-color: #f1f1f1;
+    }
+
+    &.selected {
+      background-color: #e6f7ff;
+    }
+
+    &.canceled {
+      background-color: #f1f1f1;
+    }
+  }
+
+  .uploaded-status {
+    color: green;
+    font-weight: 500;
+    background-color: $lighter-grey-color;
+    padding: 5px 10px;
+    border-radius: 12px;
+  }
+
+  .pending-status {
+    color: orange;
+    font-weight: 500;
+    background-color: $lighter-grey-color;
+    padding: 5px 10px;
+    border-radius: 12px;
+  }
+
+  .pi.pi-ellipsis-v {
+    cursor: pointer;
+  }
+
+  tbody {
+    tr {
+      cursor: pointer;
+    }
+  }
+
+  ::ng-deep .approval-btn {
+    .p-button {
+      padding: 6px 12px;
+
+      .p-button-label {
+        font-size: 12px;
+      }
+    }
+  }
+
+  // Border-radius fix for first and last row
+  thead tr:first-child {
+    th:first-child {
+      border-top-left-radius: 12px;
+    }
+    th:last-child {
+      border-top-right-radius: 12px;
+    }
+  }
+}
+.tree-table-cell { 
+  // width: 5%;
+  padding-left: 0!important;
+  padding-right: 0!important;
+  font-size: 12px;
+  // padding: 0;
+}

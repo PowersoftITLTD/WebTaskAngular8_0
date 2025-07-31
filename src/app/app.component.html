@@ -1,0 +1,18 @@
+<router-outlet></router-outlet>
+<!-- Toaster Message -->
+<p-toast>
+  <ng-template let-message pTemplate="message">
+    <div class="flex align-items-center gap-2 flex-1">
+      @if (message?.summary === 'error') {
+        <img src="/assets/error-icon.svg" width="24" height="24" />
+      } @else {
+        <img src="/assets/check-icon.svg" width="24" height="24" />
+      }
+      <p class="m-0">
+        {{ message?.detail }}
+      </p>
+    </div>
+  </ng-template>
+</p-toast>
+
+<ngx-spinner type="ball-beat" size="default"></ngx-spinner>

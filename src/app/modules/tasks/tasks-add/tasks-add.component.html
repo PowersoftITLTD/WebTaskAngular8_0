@@ -1,0 +1,765 @@
+<p-sidebar
+  [(visible)]="sidebarVisible"
+  position="right"
+  [showCloseIcon]="false"
+  [dismissible]="true"
+  (onHide)="onSidebarHide()"
+  class="task-add"
+>
+  <ng-template pTemplate="header">
+    <div class="w-full flex justify-content-between align-items-center">
+      <h2 class="font-semibold">
+        @if (isSubTask) {
+          New Subtask
+        } @else {
+          @if (isEditMode) {
+            ({{ taskData?.Task_No }}) {{ taskData?.Task_Name }}
+          } @else {
+            New Task
+          }
+        }
+      </h2>
+      <div class="flex align-items-center gap-2">
+        <button
+          pButton
+          class="tm-primary-outline"
+          [outlined]="true"
+          severity="secondary"
+          (click)="onCancel()"
+        >
+          Cancel
+        </button>
+        <button pButton class="tm-primary-btn" (click)="onCreate()" [loading]="isLoading">
+          @if (isSubTask) {
+            Add
+          } @else {
+            @if (isEditMode) {
+              Update Task
+            } @else {
+              Create Task
+            }
+          }
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="content">
+    <form [formGroup]="taskForm">
+      <div class="formgrid grid">
+        <div class="field col-12">
+          <label for="taskName">Task Name</label>
+          <input
+            pInputText
+            id="taskName"
+            class="w-full"
+            placeholder="Enter Task Name"
+            formControlName="taskName"
+          />
+          @if (taskForm.get('taskName')?.touched && taskForm.get('taskName')?.invalid) {
+            <small class="text-red-600">Task name is required.</small>
+          }
+        </div>
+        <div class="field col-12">
+          <label for="description">Description</label>
+          <p-editor
+            id="description"
+            [style]="{ height: '140px' }"
+            formControlName="description"
+            (onTextChange)="updateFormControl($event)"
+          ></p-editor>
+          @if (taskForm.get('description')?.touched && taskForm.get('description')?.invalid) {
+            <small class="text-red-600">Description is required.</small>
+          }
+        </div>
+        <div class="field col-12 flex gap-2 flex-wrap">
+          <!-- Property -->
+          <div>
+            <a
+              class="outline-overlay-btn"
+              (click)="property.toggle($event)"
+              [ngClass]="{ active: taskForm.get('Project_Id')?.value }"
+            >
+              <i class="pi pi-home"></i>
+              <span class="font-semibold text-700">
+                @if (taskForm.get('Project_Id')?.value) {
+                  {{ selectedPropertyLabel }}
+                } @else {
+                  Property
+                }
+              </span>
+            </a>
+            <p-overlayPanel #property styleClass="task-add">
+              <p-listbox
+                [options]="propertyDropdownValues"
+                formControlName="Project_Id"
+                optionLabel="Type_Desc"
+                optionValue="Master_Mkey"
+                [filter]="true"
+                [style]="{ width: '250px' }"
+                (onChange)="property.toggle($event); getBuildingDropdownDetails()"
+              />
+            </p-overlayPanel>
+          </div>
+          <!-- Building -->
+          <div>
+            <a
+              class="outline-overlay-btn"
+              (click)="building.toggle($event)"
+              [ngClass]="{ active: this.taskForm.get('Subproject_Id')?.value }"
+            >
+              <i class="pi pi-building"></i>
+              <span class="font-semibold text-700">
+                @if (this.taskForm.get('Subproject_Id')?.value) {
+                  {{ selectedBuildingLabel }}
+                } @else {
+                  Building
+                }
+              </span>
+            </a>
+            <p-overlayPanel #building styleClass="task-add">
+              <p-listbox
+                [options]="buildingDropDownValues"
+                formControlName="Subproject_Id"
+                optionLabel="TYPE_DESC"
+                optionValue="MASTER_MKEY"
+                [filter]="true"
+                [style]="{ width: '250px' }"
+                (onChange)="building.toggle($event); selectOfBuilding()"
+              />
+            </p-overlayPanel>
+          </div>
+          <!-- Checklist -->
+          <div>
+            <a
+              class="outline-overlay-btn"
+              (click)="resetGridBooleans(); showCheckList = !showCheckList"
+              [ngClass]="{ active: checkListTableData?.length > 0 }"
+            >
+              <i class="pi pi-check-square"></i>
+              <span class="font-semibold text-700"> Checklist </span>
+            </a>
+          </div>
+          <!-- Assignee -->
+          <div>
+            <a
+              class="outline-overlay-btn"
+              (click)="assignee.toggle($event)"
+              [ngClass]="{ active: taskForm.get('Assigned_To')?.value }"
+            >
+              <i class="pi pi-user"></i>
+              <span class="font-semibold text-700">
+                @if (taskForm.get('Assigned_To')?.value) {
+                  {{ selectedAssignedPeopleLabel }}
+                } @else {
+                  Assignee
+                }
+              </span>
+            </a>
+            <p-overlayPanel #assignee styleClass="task-add">
+              <p-listbox
+                [options]="assignedPeopleList"
+                formControlName="Assigned_To"
+                optionLabel="EMP_FULL_NAME"
+                optionValue="MKEY"
+                [filter]="true"
+                [style]="{ width: '250px' }"
+                (onChange)="assignee.toggle($event); onSelectOfAssignedPeople()"
+              />
+            </p-overlayPanel>
+            @if (taskForm.get('Assigned_To')?.touched && taskForm.get('Assigned_To')?.invalid) {
+              <small class="text-red-600">Assignee is required.</small>
+            }
+          </div>
+          <!-- Completion Date -->
+          <div>
+            <a
+              class="outline-overlay-btn"
+              (click)="completionDate.toggle($event)"
+              [ngClass]="{ active: taskForm.get('completionDate')?.value }"
+            >
+              <i class="pi pi-calendar"></i>
+              <span class="font-semibold text-700">
+                @if (taskForm.get('completionDate')?.value) {
+                  {{ taskForm.get('completionDate')?.value | date: 'dd MMM y' }}
+                } @else {
+                  Completion Date
+                }
+              </span>
+            </a>
+            <p-overlayPanel #completionDate styleClass="task-add" [dismissable]="false">
+              <div class="completion-date">
+                <div class="days flex justify-content-between align-items-center">
+                  <p>No. of Days</p>
+                  <input
+                    type="number"
+                    min="0"
+                    pInputText
+                    class="max-w-4rem"
+                    formControlName="numberOfDays"
+                    (input)="updateCalendar()"
+                  />
+                </div>
+                <div class="calendar">
+                  <p-calendar
+                    class="max-w-full"
+                    [inline]="true"
+                    formControlName="completionDate"
+                    (onSelect)="updateDays()"
+                    [minDate]="todayDate"
+                  />
+                </div>
+                <div class="actions">
+                  <button
+                    pButton
+                    class="tm-primary-outline justify-content-center"
+                    [outlined]="true"
+                    severity="secondary"
+                    (click)="resetValues(); completionDate.toggle($event)"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    pButton
+                    class="tm-primary-btn justify-content-center"
+                    (click)="confirmSelection(); completionDate.toggle($event)"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+            </p-overlayPanel>
+            @if (
+              taskForm.get('completionDate')?.touched && taskForm.get('completionDate')?.invalid
+            ) {
+              <small class="text-red-600">Completion date is required.</small>
+            }
+          </div>
+          <!-- Dropdown -->
+          <div>
+            <a class="outline-overlay-btn" (click)="dropdown.toggle($event)">
+              <i class="pi pi-plus"></i>
+            </a>
+            <p-overlayPanel #dropdown styleClass="task-add">
+              <ul class="dropdown-list">
+                <!-- Outcome -->
+                <li
+                  (click)="dropdown.toggle($event); resetGridBooleans(); showOutcome = !showOutcome"
+                  class="dropdown-list-item"
+                >
+                  <i class="pi pi-building"></i>
+                  Outcome
+                  @if (outcomeTableData.length > 0) {
+                    <p-badge [value]="outcomeTableData.length" />
+                  }
+                </li>
+                <!-- Authority -->
+                <li
+                  (click)="
+                    dropdown.toggle($event); resetGridBooleans(); showAuthority = !showAuthority
+                  "
+                  class="dropdown-list-item"
+                >
+                  <i class="pi pi-building"></i>
+                  Authority
+                  @if (authorityTableData.length > 0) {
+                    <p-badge [value]="authorityTableData.length" />
+                  }
+                </li>
+                <!-- Dates -->
+                <li (click)="date.toggle($event)" class="dropdown-list-item">
+                  <i class="pi pi-calendar"></i>
+                  Dates
+                  <!-- {{taskForm.get('start_Date')?.value || "-"}} -->
+                  @if (
+                    taskForm.get('Tentative_Start_Date')?.value ||
+                    taskForm.get('Tentative_End_Date')?.value ||
+                    taskForm.get('Actual_Start_Date')?.value ||
+                    taskForm.get('Actual_End_Date')?.value
+                  ) {
+                    <i class="pi pi-verified check-icon"></i>
+                  }
+                </li>
+                <p-overlayPanel #date styleClass="task-add">
+                  <div class="completion-date">
+                    <div class="tentative-dates">
+                      <p class="mb-1 text-black-alpha-50">Tentative Dates</p>
+                      <div class="grid mb-2">
+                        <div class="col">
+                          <label>Start Date</label>
+                          <div class="mt-1 w-full">
+                            <p-calendar
+                              placeholder="Select Date"
+                              dateFormat="dd M yy"
+                              formControlName="Tentative_Start_Date"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-1 flex justify-content-center align-items-center">
+                          <i class="pi pi-arrow-right"></i>
+                        </div>
+                        <div class="col">
+                          <label>End Date</label>
+                          <div class="mt-1 w-full">
+                            <p-calendar
+                              placeholder="Select Date"
+                              dateFormat="dd M yy"
+                              formControlName="Tentative_End_Date"
+                              [minDate]="taskForm.get('Tentative_Start_Date')?.value"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <p class="mb-1 text-black-alpha-50">Actual Dates</p>
+                      <div class="grid">
+                        <div class="col">
+                          <label>Start Date</label>
+                          <div class="mt-1 w-full">
+                            <p-calendar
+                              placeholder="Select Date"
+                              dateFormat="dd M yy"
+                              formControlName="Actual_Start_Date"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-1 flex justify-content-center align-items-center">
+                          <i class="pi pi-arrow-right"></i>
+                        </div>
+                        <div class="col">
+                          <label>End Date</label>
+                          <div class="mt-1 w-full">
+                            <p-calendar
+                              placeholder="Select Date"
+                              dateFormat="dd M yy"
+                              formControlName="Actual_End_Date"
+                              [minDate]="taskForm.get('Actual_Start_Date')?.value"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- <div class="calendar">
+                    <p-calendar
+                      class="max-w-full"
+                      [inline]="true"
+                      [(ngModel)]="selectedDate"
+                      (onSelect)="updateDays()"
+                      selectionMode="range"
+                    />
+                  </div> -->
+                    <div class="actions">
+                      <button
+                        pButton
+                        class="tm-primary-outline justify-content-center"
+                        [outlined]="true"
+                        severity="secondary"
+                        (click)="resetDateValues(); date.toggle($event)"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        pButton
+                        class="tm-primary-btn justify-content-center"
+                        (click)="confirmDateSelection(); date.toggle($event)"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                </p-overlayPanel>
+                <!-- Category -->
+                <li
+                  (click)="category.toggle($event)"
+                  class="dropdown-list-item"
+                  [ngClass]="{
+                    'text-red-600':
+                      taskForm.get('Category')?.invalid && taskForm.get('Category')?.touched,
+                  }"
+                >
+                  <i class="pi pi-th-large"></i>
+                  Category
+                  @if (taskForm.get('Category')?.value) {
+                    <!-- <p-badge [value]="1" severity="secondary" /> -->
+                    <i class="pi pi-verified check-icon"></i>
+                  }
+                </li>
+                <p-overlayPanel #category styleClass="task-add">
+                  <p-listbox
+                    [options]="categoryList"
+                    formControlName="Category"
+                    optionLabel="Type_Desc"
+                    optionValue="Master_Mkey"
+                    [filter]="true"
+                    [style]="{ width: '250px' }"
+                    (onChange)="category.toggle($event)"
+                  />
+                </p-overlayPanel>
+                <!-- Type -->
+                <li (click)="type.toggle($event)" class="dropdown-list-item">
+                  <i class="pi pi-th-large"></i>
+                  Type
+                  @if (taskForm.get('Type')?.value) {
+                    <!-- <p-badge [value]="1" severity="secondary" /> -->
+                    <i class="pi pi-verified check-icon"></i>
+                  }
+                </li>
+                <p-overlayPanel #type styleClass="task-add">
+                  <p-listbox
+                    [options]="typeList"
+                    formControlName="Type"
+                    optionLabel="Type_Desc"
+                    optionValue="Mkey"
+                    [filter]="true"
+                    [style]="{ width: '250px' }"
+                    (onChange)="type.toggle($event)"
+                  />
+                </p-overlayPanel>
+                <!-- Priority -->
+                <li
+                  (click)="priority.toggle($event)"
+                  class="dropdown-list-item"
+                  [ngClass]="{
+                    'text-red-600':
+                      taskForm.get('Priority')?.invalid && taskForm.get('Priority')?.touched,
+                  }"
+                >
+                  <i class="pi pi-flag"></i>
+                  Priority
+                  @if (taskForm.get('Priority')?.value) {
+                    <i class="pi pi-verified check-icon"></i>
+                    <!-- <p-badge [value]="1" severity="secondary" /> -->
+                  }
+                </li>
+                <p-overlayPanel #priority styleClass="task-add">
+                  <p-listbox
+                    [options]="priorityList"
+                    formControlName="Priority"
+                    optionLabel="name"
+                    optionValue="name"
+                    [style]="{ width: '200px' }"
+                    (onChange)="priority.toggle($event)"
+                  >
+                    <ng-template let-priorityItem pTemplate="item">
+                      <div class="flex align-items-center">
+                        <i class="pi pi-flag-fill" [ngStyle]="{ color: priorityItem.color }"></i>
+                        <span class="ml-2">{{ priorityItem.name }}</span>
+                      </div>
+                    </ng-template>
+                  </p-listbox>
+                </p-overlayPanel>
+                <!-- Tags -->
+                <li (click)="tags.toggle($event)" class="dropdown-list-item">
+                  <i class="pi pi-tag"></i>
+                  Tags
+                  @if (selectedTag.length) {
+                    <!-- <i class="pi pi-verified check-icon"></i> -->
+                    <p-badge [value]="selectedTag.length" />
+                  }
+                </li>
+                <p-overlayPanel #tags styleClass="task-add-new">
+                  <!-- <p-listbox
+                  [options]="tagsList"
+                  [(ngModel)]="selectedTag"
+                  [ngModelOptions]="{standalone: true}"
+                  optionLabel="name"
+                  optionValue="name"
+                  [filter]="true"
+                  [style]="{ width: '200px' }"
+                  (onChange)="tags.toggle($event)"
+                /> -->
+                  <p-multiSelect
+                    #multiSelect
+                    [options]="tagsList"
+                    [(ngModel)]="selectedTag"
+                    optionLabel="name"
+                    optionValue="name"
+                    [ngModelOptions]="{ standalone: true }"
+                    placeholder="Select Tags"
+                    (keydown)="handleKeyDown($event)"
+                    display="chip"
+                    [emptyFilterMessage]="'Press enter to add tag'"
+                  >
+                  </p-multiSelect>
+                </p-overlayPanel>
+
+                <!-- File Upload -->
+                <li (click)="fileupload.toggle($event)" class="dropdown-list-item">
+                  <i class="pi pi-paperclip"></i>
+                  Attachment
+                  @if (selectedFile) {
+                    <i class="pi pi-upload check-icon"></i>
+                    <!-- <p-badge [value]="1" severity="secondary" /> -->
+                  }
+                </li>
+                <p-overlayPanel #fileupload styleClass="task-add"> </p-overlayPanel>
+              </ul>
+            </p-overlayPanel>
+          </div>
+        </div>
+      </div>
+    </form>
+    <!-- Checklist -->
+    @if (showCheckList) {
+      <div class="container-add mt-3">
+        <div class="flex align-items-center justify-content-between gap-2 mb-3">
+          <h3 class="m-0">Checklist</h3>
+          <div class="flex align-items-center gap-2">
+            <button
+              pButton
+              class="tm-primary-btn"
+              (click)="resetGridBooleans(); onTableSave('checklist')"
+            >
+              Save
+            </button>
+            <button
+              pButton
+              class="tm-primary-outline"
+              [outlined]="true"
+              severity="secondary"
+              (click)="resetGridBooleans(); onTableCancel('checklist')"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+        <!-- Table -->
+        <div>
+          <div class="grid">
+            <div class="col-4">
+              <div class="side-pannel">
+                <!-- Search Bar -->
+                <p-iconField iconPosition="left">
+                  <p-inputIcon styleClass="pi pi-search" />
+                  <input
+                    type="text"
+                    pInputText
+                    placeholder="Search"
+                    [(ngModel)]="searchQuery"
+                    class="w-full mb-2"
+                  />
+                </p-iconField>
+
+                <!-- Category Sections -->
+                <p-accordion [activeIndex]="0">
+                  <p-accordionTab
+                    *ngFor="let category of checkListCategories"
+                    [iconPos]="'end'"
+                    tabStyleClass="mb-2"
+                  >
+                    <ng-template pTemplate="header">
+                      <div class="">
+                        <span>{{ category.Doc_Category_Name }}</span>
+                      </div>
+                    </ng-template>
+
+                    <div *ngFor="let item of category.items" class="list-item">
+                      <p-checkbox
+                        [(ngModel)]="item.selected"
+                        [binary]="true"
+                        (onChange)="updateCheckListTableData(item)"
+                      ></p-checkbox>
+                      <label class="">{{ item.Doc_Type_Name }}</label>
+                    </div>
+                  </p-accordionTab>
+                </p-accordion>
+              </div>
+            </div>
+            <div class="col-8">
+              <app-tm-table
+                [columns]="checkListTableColumns"
+                [data]="checkListTableData"
+                [selectable]="false"
+                [status]="false"
+              >
+              </app-tm-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Outcome -->
+    @if (showOutcome) {
+      <div class="container-add mt-3">
+        <div class="flex align-items-center justify-content-between gap-2 mb-3">
+          <h3 class="m-0">Outcome</h3>
+          <div class="flex align-items-center gap-2">
+            <button
+              pButton
+              class="tm-primary-btn"
+              (click)="resetGridBooleans(); onTableSave('outcome')"
+            >
+              Save
+            </button>
+            <button
+              pButton
+              class="tm-primary-outline"
+              [outlined]="true"
+              severity="secondary"
+              (click)="resetGridBooleans(); onTableCancel('outcome')"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+        <!-- Table -->
+        <div>
+          <div class="grid">
+            <div class="col-4">
+              <div class="side-pannel">
+                <!-- Search Bar -->
+                <p-iconField iconPosition="left">
+                  <p-inputIcon styleClass="pi pi-search" />
+                  <input
+                    type="text"
+                    pInputText
+                    placeholder="Search"
+                    [(ngModel)]="searchQuery"
+                    class="w-full mb-2"
+                  />
+                </p-iconField>
+
+                <!-- Category Sections -->
+                <p-accordion [activeIndex]="0">
+                  <p-accordionTab
+                    *ngFor="let category of outcomeCategories"
+                    [iconPos]="'end'"
+                    tabStyleClass="mb-2"
+                  >
+                    <ng-template pTemplate="header">
+                      <div class="">
+                        <span>{{ category.Doc_Category_Name }}</span>
+                      </div>
+                    </ng-template>
+
+                    <div *ngFor="let item of category.items" class="list-item">
+                      <p-checkbox
+                        [(ngModel)]="item.selected"
+                        [binary]="true"
+                        (onChange)="updateOutcomeTableData(item)"
+                      ></p-checkbox>
+                      <label class="">{{ item.Doc_Type_Name }}</label>
+                    </div>
+                  </p-accordionTab>
+                </p-accordion>
+              </div>
+            </div>
+            <div class="col-8">
+              <app-tm-table
+                [columns]="checkListTableColumns"
+                [data]="outcomeTableData"
+                [selectable]="false"
+                [status]="false"
+              >
+              </app-tm-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Authority -->
+    @if (showAuthority) {
+      <div class="container-add mt-3">
+        <div class="flex align-items-center justify-content-between gap-2 mb-3">
+          <h3 class="m-0">Authority</h3>
+          <div class="flex align-items-center gap-2">
+            <button pButton class="tm-primary-btn" (click)="resetGridBooleans(); onAuthoritySave()">
+              Save
+            </button>
+            <button
+              pButton
+              class="tm-primary-outline"
+              [outlined]="true"
+              severity="secondary"
+              (click)="resetGridBooleans(); onAuthorityCancel()"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+        <div class="authority-add mb-3">
+          <div class="formgrid grid">
+            <div class="field col-12 md:col-2">
+              <label for="level">Level</label>
+              <input
+                id="level"
+                type="number"
+                [min]="1"
+                placeholder="Enter Level"
+                pInputText
+                class="w-full"
+                [(ngModel)]="currentSanctioningLevel"
+                #level="ngModel"
+                (input)="checkLevel(level)"
+              />
+              @if (level.invalid) {
+                <small class="text-red-600">Level already exist</small>
+              }
+            </div>
+            <div class="field col-12 md:col-4">
+              <label for="SanctioningDepartment">Sanctioning Department</label>
+              <input
+                id="SanctioningDepartment"
+                type="text"
+                placeholder="Enter Sanctioning Department"
+                pInputText
+                class="w-full"
+                [(ngModel)]="currentSanctioningDepartment"
+              />
+            </div>
+            <div class="field col-12 md:col-4">
+              <label for="SanctioningAuthority">Sanctioning Authority</label>
+              <p-dropdown
+                id="SanctioningAuthority"
+                [options]="sanctioningList"
+                [(ngModel)]="selectedSanctioningAuthority"
+                optionLabel="Type_Desc"
+                placeholder="Enter Sanctioning Authority"
+              />
+            </div>
+            <div class="field col-12 md:col-2">
+              <label for="Mode">Mode</label>
+              <div class="w-ful">
+                <p-inputSwitch [(ngModel)]="currentSanctioningMode" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <button
+            pButton
+            class="tm-primary-outline"
+            [outlined]="true"
+            [label]="isEditingAuthority ? 'Update' : 'Add'"
+            [icon]="'pi ' + (isEditingAuthority ? 'pi-check' : 'pi-plus')"
+            severity="secondary"
+            (click)="onAddSanctioning()"
+          ></button>
+          @if (isEditingAuthority) {
+            <button
+              pButton
+              class="tm-primary-outline ml-2"
+              [outlined]="true"
+              label="Cancel"
+              icon="pi pi-times"
+              severity="secondary"
+              (click)="cancelEditAuthority()"
+            ></button>
+          }
+        </div>
+
+        <app-tm-table
+          [columns]="authorityTableColumns"
+          [data]="authorityTableData"
+          [selectable]="false"
+          [status]="false"
+          (onDelete)="deleteAuthority($event)"
+          (onEdit)="editAuthority($event)"
+        >
+        </app-tm-table>
+      </div>
+    }
+  </ng-template>
+</p-sidebar>

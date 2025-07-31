@@ -1,0 +1,47 @@
+
+<!-- <p>document-list works!</p> -->
+<div class="mb-3">
+    <app-tm-advance-search
+      [showButton]="true"
+      [buttonLabel]="'Add Document'"
+      (onButtonClick)="addCompliance()">
+    ></app-tm-advance-search>
+  </div>
+
+  <!-- Tabs -->
+<div class="mb-3">
+    <app-tm-tabs
+      [tabs]="tabList"
+      [counts]="tabCounts"
+      (tabChanged)="onTabChange($event)"
+      [activeTab]="currentTab"
+      [showCount]="false"
+    >
+    </app-tm-tabs>
+  </div>
+
+  <!-- List Tab -->
+@if (currentTab === 'List') {
+    @for (data of dataList; track $index) {
+      <div class="mb-2">
+        <app-progress-card [data]="data" ></app-progress-card>
+      </div>
+    }
+  }
+
+  <!-- Table -->
+@if (currentTab === 'Table') {
+    <app-tm-table
+      [columns]="columns"
+      [data]="data"
+      [selectable]="true"
+      [status]="true"
+      [loading]="false"
+    ></app-tm-table>
+  }
+
+  <!-- Add Document Modal -->
+<app-add-compliance
+[sidebarVisible]="sidebarVisible"
+(sidebarHide)="sidebarVisible = false">
+</app-add-compliance>

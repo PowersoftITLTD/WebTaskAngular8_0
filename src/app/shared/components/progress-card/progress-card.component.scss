@@ -1,0 +1,134 @@
+@import 'variables';
+
+.progress-card {
+  background-color: white;
+  border: 1px solid $light-border-color;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #252b37;
+  }
+
+  p {
+    font-size: 14px;
+    font-weight: 400;
+    color: #535862;
+  }
+
+  .description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+
+    padding: 8px 12px;
+    border-radius: 8px;
+
+    background: #eaeaea;
+    color: #181d27;
+
+    &.inProcess,
+    &.CloseInitiated,
+    &.In-Progress {
+      background: $light-orange-color;
+      color: $orange-color;
+    }
+    &.notStarted,
+    &.Not-Started {
+      background: $light-grey-color;
+      color: #181d27;
+    }
+    &.completed,
+    &.Completed {
+      background: $light-green-color;
+      color: $green-color;
+    }
+  }
+
+  .priority {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+
+    padding: 8px 12px;
+    border-radius: 8px;
+
+    color: #414651;
+
+    &.medium {
+      i {
+        color: $orange-color;
+      }
+    }
+    &.high {
+      i {
+        color: $red-color;
+      }
+    }
+    &.low {
+      i {
+        color: $green-color;
+      }
+    }
+  }
+
+  .profile-pics {
+    img {
+      border-radius: 50%;
+      aspect-ratio: 1/1;
+      width: 32px;
+      height: 32px;
+
+      &:not(:first-child) {
+        margin-left: -8px;
+      }
+    }
+  }
+  .assignee {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+
+    .initials {
+      background-color: $blue-color;
+      color: white;
+      border-radius: 50%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 20px;
+      height: 20px;
+      font-size: 10px;
+      &.orange {
+        background-color: $orange-color;
+      }
+    }
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 8px 12px;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    background: $lighter-grey-color;
+    font-size: 12px;
+    color: #252b37;
+  }
+}

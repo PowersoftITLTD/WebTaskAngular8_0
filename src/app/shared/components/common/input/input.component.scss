@@ -1,0 +1,44 @@
+.input-wrapper {
+    margin-bottom: 16px;
+  
+    .input-label {
+      font-size: 14px;
+      color: #333;
+      display: block;
+      margin-bottom: 8px;
+    }
+  
+    .input-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+  
+      .pi {
+        position: absolute;
+        left: 10px;
+      }
+  
+      input {
+        padding: 12px 14px;
+        width: 100%;
+        background-color: #ffffff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+  
+        ::ng-deep .placeholder-color input::placeholder {
+          color: #d6d6d6;
+        }
+  
+        &.input-error {
+          border-color: red;
+        }
+      }
+    }
+  
+    .error-message {
+      color: red;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+  }
+  

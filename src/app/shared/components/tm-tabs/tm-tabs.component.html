@@ -1,0 +1,15 @@
+<div class="tabs">
+  @for (tab of tabs; track tab; let i = $index) {
+    <div class="tab-item" (click)="selectTab(tab)" [class.active]="tab.label === activeTab">
+      <span class="tab-label">
+        @if (tab.icon) {
+          <i [class]="tab.icon"></i>
+        }
+        {{ tab.label }}
+      </span>
+      @if (showCount) {
+        <span class="tab-count">{{ counts[i] }}</span>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,30 @@
+<div class="card">
+    <!-- Comment Input Box -->
+    <div class="comment-container">
+        <div class="p-inputgroup">
+          <input type="text" pInputText placeholder="Write a comment..." [(ngModel)]="comment" class="comment-input">
+          <span class="separator"></span>
+          <span class="p-inputgroup-addon send-button">
+            <button pButton type="button" label="Send" class="send-btn"></button>
+          </span>
+        </div>
+      </div>
+      
+    <!-- Comment List -->
+    <div class="comment-list">
+        <div *ngFor="let comment of comments" class="comment-item">
+          <p-avatar [image]="comment.avatar" size="normal" shape="circle"></p-avatar>
+          <div class="comment-content">
+            <div class="comment-header">
+              <span class="comment-author">{{ comment.author }}</span>
+              <span class="comment-time">• {{ comment.time }}</span>
+            </div>
+            <p>
+              <span class="mention">&commat;{{ comment.mention }}</span> {{ comment.text }}
+            </p>
+          </div>
+        </div>
+      </div>
+      
+  </div>
+  

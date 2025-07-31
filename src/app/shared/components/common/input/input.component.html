@@ -1,0 +1,34 @@
+<div class="input-wrapper">
+    @if (label) {
+    <label class="input-label">
+      {{ label }}
+    </label>
+    }
+  
+    <div class="input-container p-input-icon-left p-input-icon-right">
+      @if (iconStart) {
+      <i class="pi" [ngClass]="iconStart"></i>
+      }
+  
+      <input
+        pInputText
+        [type]="type"
+        [placeholder]="placeholder"
+        [value]="value"
+        (input)="onInput($event)"
+        (blur)="markAsTouched()"
+        [disabled]="isDisabled"
+        [ngClass]="{ 'input-error': getErrorMessage() }"
+      />
+      @if (iconEnd) {
+        <i class="pi" [ngClass]="iconEnd"></i>
+      }
+    </div>
+  
+    @if (control.invalid && control.touched) {
+      <div class="error-message">
+        {{ getErrorMessage() }}
+      </div>
+    }
+  </div>
+  

@@ -1,0 +1,33 @@
+<!-- <p>approval-list works!</p> -->
+<!-- @if (sidebarVisible) {
+  <div style="position: relative; z-index: 1;"> -->
+    <app-add-approval 
+      [sidebarVisible]="sidebarVisible"
+      (sidebarHide)="sidebarVisible = false">
+    </app-add-approval>
+  <!-- </div>
+} -->
+   
+
+
+ <!-- <app-add-approval [visible]="sidebarVisible" (visibleChange)="sidebarVisible = $event"></app-add-approval> -->
+
+<div class="card flex justify-content-center">
+    <p-breadcrumb />
+</div>
+
+<div class="container">
+
+    <div class="mb-3">
+        <app-tm-advance-search 
+        [showButton]="true"
+        [buttonLabel]="'Add New Approval'"
+        (onButtonClick)="addApproval()">
+        </app-tm-advance-search>
+    </div>
+
+    <div class="mb-3">
+        <app-progress-card [data]="data"></app-progress-card>
+    </div>
+
+</div>
