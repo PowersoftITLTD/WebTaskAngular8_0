@@ -42,6 +42,7 @@ import { ApprovalTableComponent } from './components/approval-table/approval-tab
 import { TableModule } from 'primeng/table';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
+import { ListboxModule } from 'primeng/listbox';
 
 
 @NgModule({
@@ -92,7 +93,8 @@ import { ButtonModule } from 'primeng/button';
     TableModule,
     InputTextModule,
     DropdownModule,
-    ButtonModule
+    ButtonModule,
+    ListboxModule
     
   ],
   exports: [
@@ -121,7 +123,8 @@ import { ButtonModule } from 'primeng/button';
     TableModule,
     InputTextModule,
     DropdownModule,
-    ButtonModule
+    ButtonModule,
+    ListboxModule
   ],
 })
 export class SharedModule {}

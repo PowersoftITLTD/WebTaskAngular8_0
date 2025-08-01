@@ -1,0 +1,17 @@
+.high-z-index {
+  position: relative;
+  z-index: 1050; /* or higher if needed */
+}
+
+.p-dropdown-panel{
+  z-index: 9999 !important;
+}
+
+::ng-deep .p-dropdown-panel {
+  z-index: 9999 !important;
+}
+
+::ng-deep .p-datatable-scrollable-header,
+.p-datatable-scrollable-body {
+  overflow: visible !important;
+}

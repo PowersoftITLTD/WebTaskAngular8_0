@@ -1,4 +1,4 @@
-<p-table [value]="data" responsiveLayout="scroll">
+<p-table [value]="data" responsiveLayout="scroll" class="high-z-index">
   <ng-template pTemplate="header">
     <tr>
       <th *ngFor="let col of columns">{{ col.header }}</th>
@@ -13,30 +13,41 @@
           {{ rowIndex + 1 }}
         </ng-container>
 
-        <!-- Input number -->
+           <!-- Number field (for numeric data like "Sequential No") -->
         <ng-container *ngIf="col.type === 'number'">
           <input type="number" class="p-inputtext p-component" [(ngModel)]="row[col.field]"
                  (ngModelChange)="rowChange.emit({ rowIndex, field: col.field, value: $event })">
         </ng-container>
 
         <!-- Dropdown -->
-        <ng-container *ngIf="col.type === 'dropdown'">
-          <p-dropdown 
-            [options]="col.options" 
-            [optionLabel]="col.optionLabel" 
-            [optionValue]="col.optionValue || col.optionLabel"
-            [(ngModel)]="row[col.field]"
-            (onChange)="rowChange.emit({ rowIndex, field: col.field, value: $event.value })"
-            placeholder="--SELECT--">
-          </p-dropdown>
+        <ng-container *ngIf="col.type === 'dropdown'" >
+         
+         <p-dropdown 
+          appendTo="body"
+          [options]="col.options"
+          [optionLabel]="'label'"
+          [optionValue]="'value'"
+          [(ngModel)]="row[col.field]"
+          (onChange)="rowChange.emit({ rowIndex, field: col.field, value: $event.value })"
+          placeholder="--SELECT--"
+          [filter]="true"
+          filterBy="label"
+          >
+        </p-dropdown>
+
+     
+     
         </ng-container>
 
-        <!-- Readonly field -->
-        <ng-container *ngIf="col.type === 'text' && col.readonly">
-          <input type="text" class="p-inputtext p-component" [value]="row[col.field]" readonly>
+        <!-- Text field (for string data like "Abbreviation", "Description") -->
+        <ng-container *ngIf="col.type === 'text'">
+          <input type="text" class="p-inputtext p-component" [(ngModel)]="row[col.field]"
+                 (ngModelChange)="rowChange.emit({ rowIndex, field: col.field, value: $event })">
         </ng-container>
 
-        <!-- Actions -->
+     
+
+        <!-- Actions (delete button) -->
         <ng-container *ngIf="col.type === 'actions'">
           <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text"
                   (click)="deleteRow.emit(rowIndex)">

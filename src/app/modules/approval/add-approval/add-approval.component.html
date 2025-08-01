@@ -611,7 +611,8 @@
 
     <!--Sub task list-->
     @if(showSubTaskList){
-     <div class="container-add mt-3">
+     
+      <div class="container-add mt-3">
         <div class="mb-3">
           <button pButton class="tm-primary-outline" [outlined]="true" label="Add" icon="pi pi-plus"
             severity="secondary" (click)="addRow()"></button>
@@ -625,12 +626,12 @@
         </app-tm-table> -->
 
         <app-approval-table
-         [columns]="authorityTableColumns"
-    [data]="authorityTableData"
-    (rowChange)="onTableRowChange($event)"
-    (deleteRow)="removeRow($event)">          
+          [columns]="authorityTableColumns"
+          [data]="authorityTableData"
+          (rowChange)="onTableRowChange($event)"
+          (deleteRow)="removeRow($event)">          
         </app-approval-table>
-    </div>
+     </div>
 
     }
 
