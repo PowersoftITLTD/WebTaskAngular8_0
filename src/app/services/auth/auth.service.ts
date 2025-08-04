@@ -44,7 +44,7 @@ export class AuthService {
        url = endpointPaths.GetAbbrAndShortAbbr + '/' + url
     }
 
-    console.log('check url: ', `${environment.apiBaseUrl}${url}`)
+    // console.log('check url: ', `${environment.apiBaseUrl}${url}`)
     return this.http.post(`${environment.apiBaseUrl}${url}`, body);
   }
 
