@@ -7,7 +7,7 @@
         <button pButton class="tm-primary-outline"  [outlined]="true" severity="secondary" (click)="onCancel()">
           Cancel
         </button>
-        <button pButton class="tm-primary-btn" (click)="onAdd()">Add</button>
+        <button pButton class="tm-primary-btn" (click)="onCreate()">Add</button>
       </div>
     </div>
   </ng-template>
@@ -105,12 +105,12 @@
       <div class="flex justify-content-between mt-2">
         <div class="col-2">
           <label class="block mb-1">Sequence No.</label>
-          <input type="text" pInputText formControlName="shortDescription" style="width: -webkit-fill-available;" />
+          <input type="text" pInputText formControlName="sequenceNo" style="width: -webkit-fill-available;" />
         </div>
 
         <div class="col-2">
           <label class="block mb-1">No. of Days</label>
-          <input type="text" pInputText formControlName="shortDescription" style="width: -webkit-fill-available;" />
+          <input type="text" pInputText formControlName="noOfDays" style="width: -webkit-fill-available;" />
         </div>
 
         <div class="col-8">
@@ -119,6 +119,7 @@
               type="text"
               pInputText
               placeholder="Tags"
+              formControlName="tags"
               (focus)="tags.toggle($event)"
               class="block mb-1"
               style="width: -webkit-fill-available;"

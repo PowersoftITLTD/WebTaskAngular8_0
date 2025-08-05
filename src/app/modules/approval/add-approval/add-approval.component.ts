@@ -8,6 +8,8 @@ import { Store } from '@ngrx/store';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { storedDetails } from '../../../store/auth/auth.selectors';
 import { NotificationService } from '../../../services/notification.service';
+import { TemplateInterface } from '../../../shared/model/template.model';
+
 
 @Component({
   selector: 'app-add-approval',
@@ -47,6 +49,7 @@ export class AddApprovalComponent {
 
   outcomeCategories: any = [];
   outcomeTableData: any = [];
+  checkListTableData:any = [];//{ srNo: 1, documentCategory: 'Land Related', documentName: 'Deed' }
 
   checkListCategories: any = [];
   department: any = [];
@@ -102,9 +105,9 @@ export class AddApprovalComponent {
   addWork() {
     this.sidebarVisible = true;
   }
-  onCreate() {
-    this.sidebarVisible = false;
-  }
+  // onCreate() {
+  //   this.sidebarVisible = false;
+  // }
   projectForm: FormGroup;
   properties = [
     { label: 'Hubtown', value: 'Hubtown' },
@@ -174,7 +177,7 @@ export class AddApprovalComponent {
   ngOnInit() {
     this.store.select(storedDetails).pipe(take(1)).subscribe((data) => {
       this.authData = data;
-      console.log('Auth Data:', this.authData);
+      //console.log('Auth Data:', this.authData);
 
       if (this.isEditMode) {
         this.spinner.show();
@@ -233,27 +236,6 @@ export class AddApprovalComponent {
   }
 
 
-  //   addRow() {
-  //     console.log("Add row clicked");
-
-  //     const newRow = {
-  //       abbrivation: 'asd',
-  //       shorT_DESCRIPTION: 'asd',
-  //       sanctioN_DEPARTMENT: 'asd',
-  //       nO_DAYS_REQUIRED: 'asd',
-  //       authoritY_DEPARTMENT: 'asd',
-  //       enD_RESULT_DOC: 'asd',
-  //       subtasK_MKEY: 'asd',
-  //       subTaskTags: 'asd',
-  //       sequentialNo: this.authorityTableData.length + 1
-  //     };
-
-  //     // IMPORTANT: Use spread operator to trigger change detection
-  //     this.authorityTableData = [...this.authorityTableData, newRow];
-  //     console.log('AuthorityTableData: ',this.authorityTableData)
-  // }
-
-
   addRow(savedData?: any) {
     const buildingType = this.projectForm.get('building')?.value;
     const buildingStandard = this.projectForm.get('standard')?.value;
@@ -279,16 +261,8 @@ export class AddApprovalComponent {
       // API call to fetch abbreviation and other data
       this.apiService.postDetails(url, body, false, false, true).subscribe({
         next: (gerAbbrRelData) => {
-          // this.checkValue(gerAbbrRelData); // Call checkValue to process the first time
 
-         // console.log('gerAbbrRelData: ',gerAbbrRelData);
-         // console.log('authorityTableColumns: ', this.authorityTableColumns);
-         // gerAbbrRelData
-
-          
           this.getRelAbbr = Array.isArray(gerAbbrRelData) ? gerAbbrRelData : [gerAbbrRelData];
-
-        
 
           if (this.getRelAbbr.length === 0) {
             //this.tostar.error("Details of this combination is empty or missing");
@@ -296,8 +270,6 @@ export class AddApprovalComponent {
           }
 
           const rows: FormArray = this.projectForm.get('rows') as FormArray;
-
-
 
           const tagsValue = rows.get('subTaskTags')?.value || [];
           let tagsString: string = '';
@@ -318,13 +290,13 @@ export class AddApprovalComponent {
 
           // Create a new row with the necessary controls
           const newRow = this.fb.group({
-            abbrivation: ['abbrivation', Validators.required],
-            shorT_DESCRIPTION: ['Short desctiption'],
-            sanctioN_DEPARTMENT: ['Sanction Department'],
-            nO_DAYS_REQUIRED: ['No of days'],
-            authoritY_DEPARTMENT: ['Authority department'],
-            enD_RESULT_DOC: ['End Result documents'],
-            subtasK_MKEY: ['Test 1'],
+            abbrivation: [''],
+            shorT_DESCRIPTION: [''],
+            sanctioN_DEPARTMENT: [''],
+            nO_DAYS_REQUIRED: [1],
+            authoritY_DEPARTMENT: [''],
+            enD_RESULT_DOC: [''],
+            subtasK_MKEY: [''],
             subTaskTags: [tagsString],
             sequentialNo: [rows.length + 1],
           });
@@ -334,38 +306,38 @@ export class AddApprovalComponent {
 
           const data = gerAbbrRelData.value[0]?.Data;
 
-        console.log('data newRow.value: ', data)
+          // console.log('data newRow.value: ', data)
 
-        // Step 1: Build unique Abbreviation options
+          // Step 1: Build unique Abbreviation options
           const abbrOptions = Array.from(
             new Map(
-              data.map((item:any) => [item.Main_Abbr, { 
+              data.map((item: any) => [item.Main_Abbr, {
                 ...item,
-                label: item.Main_Abbr, value: item.Main_Abbr 
+                label: item.Main_Abbr, value: item.Main_Abbr
               }])
             ).values()
           );
 
-          console.log('abbrOptions: ', abbrOptions)
+          // console.log('abbrOptions: ', abbrOptions)
 
           // Step 2: Build unique Short Description options
           const shortDescOptions = Array.from(
             new Map(
-              data.map((item:any) =>
+              data.map((item: any) =>
                 //console.log('Short description: ',item)
                 [item.Short_Description?.trim(), {
-                label: item.Short_Description?.trim(),
-                value:item.Short_Description?.trim(),
-                ...item
-              }]
-            )
+                  label: item.Short_Description?.trim(),
+                  value: item.Short_Description?.trim(),
+                  ...item
+                }]
+              )
             ).values()
           );
 
-          console.log('shortDescOptions from add-approval: ', shortDescOptions)
+          // console.log('shortDescOptions from add-approval: ', shortDescOptions)
 
           // Step 3: Update authorityTableColumns
-          this.authorityTableColumns = this.authorityTableColumns.map((column:any) => {
+          this.authorityTableColumns = this.authorityTableColumns.map((column: any) => {
             if (column.field === 'abbrivation') {
               return { ...column, options: abbrOptions };
             }
@@ -375,11 +347,9 @@ export class AddApprovalComponent {
             return column;
           });
 
-          console.log('this.authorityTableColumns from add-approval', this.authorityTableColumns )
 
           this.authorityTableData = [...this.authorityTableData, newRow.value];
 
-          console.log('AuthorityTableData: ', this.authorityTableData)
 
           if (!this.isCheckValueCalled) {
             this.isCheckValueCalled = true;
@@ -399,193 +369,49 @@ export class AddApprovalComponent {
     }
   }
 
-  //  onTableRowChange(event: { rowIndex: number, field: string, value: any }) {
-
-  //   console.log('Check the event: ',event)
-  //   const { rowIndex, field, value } = event;
-  //   this.authorityTableData[rowIndex][field] = value;
-
-  //   // console.log('authorityTableData: ',this.authorityTableData)
-  //   // console.log('field: ', field)
-
-  //   if (field === 'abbrivation') {  
-      
-  //     console.log('this.authorityTableData[rowIndex][field]: ', this.authorityTableData[rowIndex][field]);
-  //     console.log('this.getRelAbbr ', this.getRelAbbr[0].value[0].Data)
-
-  //     const selected = this.getRelAbbr[0].value[0].Data.find((item:any) => item.Main_Abbr === value);
-  //     console.log('Selected value: ',selected);
-  //     if (selected) {
-
-  //          const rows: FormArray = this.projectForm.get('rows') as FormArray;
-           
-  //          const newRow = this.fb.group({
-  //           abbrivation: [selected.Main_Abbr],
-  //           shorT_DESCRIPTION: [],
-  //           sanctioN_DEPARTMENT: [],
-  //           nO_DAYS_REQUIRED: [],
-  //           authoritY_DEPARTMENT: [],
-  //           enD_RESULT_DOC: [],
-  //           subtasK_MKEY: ['Test 1'],
-  //           subTaskTags: [''],
-  //           sequentialNo: [rows.length + 1],
-  //         });
-
-  //         rows.push(newRow);
-
-  //       // this.authorityTableData[rowIndex].shortDescription = selected.shorT_DESCRIPTION;
-  //       // this.authorityTableData[rowIndex].daysRequired = selected.nO_DAYS_REQUIRED;
-  //       // this.authorityTableData[rowIndex].authorityDept = selected.sanctioN_DEPARTMENT;
-  //       // this.authorityTableData[rowIndex].endResult = selected.enD_RESULT_DOC;
-  //     }
-  //   }
-  // }
 
   onTableRowChange(event: { rowIndex: number, field: string, value: any }) {
-  const { rowIndex, field, value } = event;
 
-  // Update the field in authorityTableData
-  this.authorityTableData[rowIndex][field] = value;
+    const { rowIndex, field, value } = event;
 
-  console.log('field: ', field);
-  console.log('value: ', value);
+    // Update the field in authorityTableData
+    this.authorityTableData[rowIndex][field] = value;
 
-  if (field === 'abbrivation' || field === 'shorT_DESCRIPTION') {
-    const matchedItem = this.getRelAbbr[0]?.value[0]?.Data.find((item: any) => item.Main_Abbr === value) || this.getRelAbbr[0]?.value[0]?.Data.find((item: any) => item.Short_Description.trim() === value);
-    console.log('matchedItem: ', matchedItem);
-    console.log('Department: ', this.department);
+    if (field === 'abbrivation' || field === 'shorT_DESCRIPTION') {
 
-       const matchedDepartment = this.department.find((department:any) => department.Mkey === matchedItem?.Authority_Department);
+      const matchedItem = this.getRelAbbr[0]?.value[0]?.Data.find((item: any) => item.Main_Abbr === value) || this.getRelAbbr[0]?.value[0]?.Data.find((item: any) => item.Short_Description.trim() === value);
+      const matchedDepartment = this.department.find((department: any) => department.Mkey === matchedItem?.Authority_Department);
 
-    console.log('matchedDepartment: ',matchedDepartment);
-    console.log('matchedItem: ', matchedItem);
-    if (matchedDepartment) {
+      if (matchedDepartment) {
         matchedItem.Authority_Dept = matchedDepartment.Department_Type;
-    } else {
-        console.log("Department not found");
-    }
-    if (matchedItem) {
-      // Update the authorityTableData row with new values
-      this.authorityTableData[rowIndex] = {
-        ...this.authorityTableData[rowIndex],
-        abbrivation: matchedItem.Main_Abbr,
-        shorT_DESCRIPTION: matchedItem.Short_Description,
-        sanctioN_DEPARTMENT: matchedItem.Authority_Department,
-        nO_DAYS_REQUIRED: matchedItem.Days_Requierd,
-        authoritY_DEPARTMENT:  matchedItem.Authority_Dept,
-        enD_RESULT_DOC: matchedItem.End_Result_Doc,
-      };
-
-      // Update the FormArray row too
-      const rows = this.projectForm.get('rows') as FormArray;
-      const targetRow = rows.at(rowIndex) as FormGroup;
-
-      targetRow.patchValue({
-        abbrivation: matchedItem.Main_Abbr,
-        shorT_DESCRIPTION: matchedItem.Short_Description,
-        sanctioN_DEPARTMENT: matchedItem.Authority_Department,
-        nO_DAYS_REQUIRED: matchedItem.Days_Requierd,
-        authoritY_DEPARTMENT:  matchedItem.Authority_Dept,
-        enD_RESULT_DOC: matchedItem.End_Result_Doc,
-      });
-    }
-  }
-}
-
-
-  onAbbrChange(event: Event, rowForm: FormGroup, rowIndex?: number | any) {
-    const selectElement = event.target as HTMLSelectElement; // Cast to HTMLSelectElement
-    const selectedAbbr = selectElement.value; // Now TypeScript knows 'value' exists
-
-    //console.log('selectedAbbr', selectedAbbr)
-    rowForm.get('abbrivation')?.setValue(selectedAbbr);
-
-    const selectedRow = this.getRelAbbr.find(r => r.maiN_ABBR === selectedAbbr);
-    console.log('selectedRow: ', rowForm);
-    const header_no_of_days = Number(this.projectForm.get('noOfDays')?.value);
-    const subtas_no_of_days = selectedRow?.dayS_REQUIERD || 0;
-
-    const formArray = this.projectForm.get('rows') as FormArray;
-
-    // Calculate total days required across all rows
-    let totalDaysRequired = formArray.controls.reduce((sum, row) => {
-      return sum + (row.get('nO_DAYS_REQUIRED')?.value || 0);
-    }, 0);
-
-    totalDaysRequired += subtas_no_of_days; // Add newly selected row's days
-
-    console.log('Total Days Required: ', totalDaysRequired);
-    console.log('header_no_of_days: ', header_no_of_days)
-
-    if (totalDaysRequired >= header_no_of_days) {
-      if (!confirm(`Days are exceeding as per header which is ${header_no_of_days} Days. Do you still want to proceed?`)) {
-        formArray.removeAt(formArray.length - 1); // Remove the last added row
-        return;
-      }
-    }
-
-    const abbrivation = this.projectForm.get('abbr')?.value;
-
-
-
-    if (abbrivation === selectedAbbr) {
-      this.notificationService.error('Same approval cannot assign to itself');
-      formArray.removeAt(formArray.length - 1); // Remove the last added row
-      return;
-    } else if (abbrivation === '' || abbrivation === undefined || abbrivation === null) {
-      this.notificationService.error('Please enter the approval header abbrivation');
-      formArray.removeAt(formArray.length - 1); // Remove the last added row
-      return;
-    }
-
-    console.log('ROW form: ', formArray.value)
-
-    const sublist_form_value = formArray.value
-
-    const abbrivationSet = new Set();
-    let hasDuplicate = false;
-
-    sublist_form_value.forEach((val: any) => {
-      if (abbrivationSet.has(val.abbrivation)) {
-        hasDuplicate = true;
       } else {
-        abbrivationSet.add(val.abbrivation);
+        console.log("Department not found");
       }
-    });
+      if (matchedItem) {
+        // Update the authorityTableData row with new values
+        this.authorityTableData[rowIndex] = {
+          ...this.authorityTableData[rowIndex],
+          abbrivation: matchedItem.Main_Abbr,
+          shorT_DESCRIPTION: matchedItem.Short_Description,
+          sanctioN_DEPARTMENT: matchedItem.Authority_Department,
+          nO_DAYS_REQUIRED: matchedItem.Days_Requierd,
+          authoritY_DEPARTMENT: matchedItem.Authority_Dept,
+          enD_RESULT_DOC: matchedItem.End_Result_Doc,
+        };
 
-    if (hasDuplicate) {
-      this.notificationService.error("Record already exist");
-      formArray.removeAt(formArray.length - 1); // Remove the last added row
-      return;
-    }
+        // Update the FormArray row too
+        const rows = this.projectForm.get('rows') as FormArray;
+        const targetRow = rows.at(rowIndex) as FormGroup;
 
-    const matchedDepartment = this.department.find((department: any) => department.mkey === selectedRow?.authoritY_DEPARTMENT);
-
-    console.log('matchedDepartment: ', matchedDepartment)
-    if (matchedDepartment) {
-      selectedRow.sanctioN_DEPARTMENT = matchedDepartment.typE_DESC;
-    } else {
-      console.log("Department not found");
-    }
-
-    if (selectedRow) {
-      rowForm.get('selectedAbbr')?.setValue(selectedRow.maiN_ABBR);
-      rowForm.get('shorT_DESCRIPTION')?.setValue(selectedRow.shorT_DESCRIPTION);
-      rowForm.get('sanctioN_DEPARTMENT')?.setValue(selectedRow.sanctioN_DEPARTMENT);
-      rowForm.get('nO_DAYS_REQUIRED')?.setValue(selectedRow.dayS_REQUIERD);
-      rowForm.get('enD_RESULT_DOC')?.setValue(selectedRow.enD_RESULT_DOC);
-      rowForm.get('authoritY_DEPARTMENT')?.setValue(selectedRow.abbR_SHORT_DESC);
-      rowForm.get('subtasK_MKEY')?.setValue(selectedRow.mkey);
-      rowForm.get('SUBTASK_TAGS')?.setValue(selectedRow.subTaskTags);
-    } else {
-      rowForm.get('selectedAbbr')?.setValue('');
-      rowForm.get('shorT_DESCRIPTION')?.setValue('');
-      rowForm.get('sanctioN_DEPARTMENT')?.setValue('');
-      rowForm.get('nO_DAYS_REQUIRED')?.setValue('');
-      rowForm.get('enD_RESULT_DOC')?.setValue('');
-      rowForm.get('authoritY_DEPARTMENT')?.setValue('');
-      rowForm.get('subtasK_MKEY')?.setValue('');
-      rowForm.get('SUBTASK_TAGS')?.setValue('');
+        targetRow.patchValue({
+          abbrivation: matchedItem.Main_Abbr,
+          shorT_DESCRIPTION: matchedItem.Short_Description,
+          sanctioN_DEPARTMENT: matchedItem.Authority_Department,
+          nO_DAYS_REQUIRED: matchedItem.Days_Requierd,
+          authoritY_DEPARTMENT: matchedItem.Authority_Dept,
+          enD_RESULT_DOC: matchedItem.End_Result_Doc,
+        });
+      }
     }
   }
 
@@ -594,7 +420,7 @@ export class AddApprovalComponent {
     this.authorityTableData.splice(index, 1);
   }
 
- 
+
   // checkValue(values?: any) {
   //   const formArray = this.approvalTempForm.get('rows') as FormArray;
   //   // console.log('this.getRelAbbr from checkValue', values);
@@ -651,7 +477,7 @@ export class AddApprovalComponent {
   }
 
 
-  authorityTableColumns:any = [
+  authorityTableColumns: any = [
     { header: 'Sr No.', field: 'srNo', type: 'index' },
 
     { header: 'Sequential No.', field: 'sequentialNo', type: 'number' },
@@ -685,29 +511,10 @@ export class AddApprovalComponent {
   ];
 
 
-  // authorityTableData = [
-  //   { level: 1, sanctioningDepartment: 'Dep 1', sanctioningAuthority: 'A 1', isActive: true },
-  //   { level: 2, sanctioningDepartment: 'Dep 2', sanctioningAuthority: 'A 2', isActive: false },
-  // ];
+
 
   // Checklist
   searchQuery: string = '';
-
-  // categories = [
-  //   {
-  //     name: 'Land Related',
-  //     items: [
-  //       { name: '7/12 utara', selected: false },
-  //       { name: 'Deed', selected: true },
-  //       { name: 'Land Doc Test Name', selected: false },
-  //       { name: 'TP Remark', selected: false },
-  //     ],
-  //   },
-  //   { name: "Form NOC's", items: [] },
-  //   { name: 'CFO RTT TEST 1', items: [] },
-  //   { name: 'ABC 56', items: [] },
-  //   { name: 'Others', items: [] },
-  // ];
 
   // checklist
   checkListTableColumns = [
@@ -715,7 +522,7 @@ export class AddApprovalComponent {
     { header: 'Document Category', field: 'documentCategory' },
     { header: 'Document Name', field: 'documentName' },
   ];
-  checkListTableData = [{ srNo: 1, documentCategory: 'Land Related', documentName: 'Deed' }];
+  //checkListTableData = [{ srNo: 1, documentCategory: 'Land Related', documentName: 'Deed' }];
 
   resetValues() {
     this.numberOfDays = 0;
@@ -837,7 +644,7 @@ export class AddApprovalComponent {
         }
       }),
       catchError((err) => {
-        console.error('getDocumentType failed:', err);
+        //console.error('getDocumentType failed:', err);
         return of(null); // Return fallback to prevent forkJoin from breaking
       })
     );
@@ -882,7 +689,7 @@ export class AddApprovalComponent {
             Department_Type: item.Department_Type,
             Mkey: item.Mkey
           }));
-          console.log('Department list: ', formatDept)
+          //console.log('Department list: ', formatDept)
           this.department = cloneDeep(formatDept);
         } else {
           console.warn('Unexpected response format for Doc-Type_NT', res);
@@ -912,7 +719,7 @@ export class AddApprovalComponent {
             Job_Role_Type: item.Job_Role_Type,
             Mkey: item.Mkey
           }));
-          console.log('Job role list: ', res[0].Data)
+          //console.log('Job role list: ', res[0].Data)
           this.jobRole = cloneDeep(formatDept);
         } else {
           console.warn('Unexpected response format for Doc-Type_NT', res);
@@ -995,7 +802,7 @@ export class AddApprovalComponent {
               typE_DESC: item.typE_DESC,
               mkey: item.mkey
             }));
-            console.log('formatBuild list: ', res[0].Data)
+            //console.log('formatBuild list: ', res[0].Data)
             this.building = cloneDeep(formatBuild);
           }
         },
@@ -1021,7 +828,7 @@ export class AddApprovalComponent {
               Type_Desc: item.Type_Desc,
               Mkey: item.Mkey
             }));
-            console.log('formatStandard list: ', res[0].Data)
+            //console.log('formatStandard list: ', res[0].Data)
             this.standard = cloneDeep(formatStandard);
           }
         },
@@ -1047,7 +854,7 @@ export class AddApprovalComponent {
               Type_Desc: item.Type_Desc,
               Mkey: item.Mkey
             }));
-            console.log('formatAuth list: ', res[0].Data)
+            //console.log('formatAuth list: ', res[0].Data)
             this.authority = cloneDeep(formatAuth);
           }
         },
@@ -1112,12 +919,12 @@ export class AddApprovalComponent {
       );
 
       // Optional: Reset srNo after removal
-      this.checkListTableData.forEach((data, index) => {
+      this.checkListTableData.forEach((data:any, index:any) => {
         data.srNo = index + 1;
       });
     }
 
-    console.log('Updated Table Data:', this.checkListTableData);
+   // console.log('Updated Table checkListTableData:', this.checkListTableData);
   }
 
   updateOutcomeTableData(item: any) {
@@ -1140,6 +947,9 @@ export class AddApprovalComponent {
         (data: any) => data.Doc_Type_Mkey !== item.Doc_Type_Mkey,
       );
     }
+
+    //console.log('Updated Table outcomeTableData:', this.outcomeTableData);
+
   }
 
   onTableSave(type: 'checklist' | 'outcome') {
@@ -1164,35 +974,176 @@ export class AddApprovalComponent {
   }
 
 
+  // onCreate() {
 
-  //   patchOutcome() {
-  //   if (this.taskData?.Task_Endlist && this.outcomeCategories.length > 0) {
-  //     // Clear existing outcome data
-  //     this.outcomeTableData = [];
+  //   const created_by = this.authData?.Session_User_Id;
+  //   const Business_Group_ID = this.authData?.Business_Group_Id
 
-  //     // Iterate through the Task_Endlist data
-  //     this.taskData.Task_Endlist.forEach((taskEndlistItem: any) => {
-  //       // Get the Doc_Mkey from Task_Endlist
-  //       const docMkey = +taskEndlistItem.Doc_Mkey;
+  //   const buildingType = this.projectForm.get('building')?.value;
+  //   const buildingStandard = this.projectForm.get('standard')?.value;
+  //   const statutoryAuthority = this.projectForm.get('authority')?.value;
 
-  //       // Find the corresponding document in outcomeCategories
-  //       const matchedDocument = this.outcomeCategories
-  //         .flatMap((category: any) => category.items) // Flatten the nested structure
-  //         .find((doc: any) => doc.Doc_Type_Mkey === docMkey);
+  //   const projectAbbreviation = this.projectForm.get('projectAbbreviation')?.value;
+  //   const shortDescription = this.projectForm.get('shortDescription')?.value;
+  //   const longDescription = this.projectForm.get('longDescription')?.value;
+  //   const authorityDept = this.projectForm.get('department')?.value;
 
-  //       if (matchedDocument) {
-  //         // Add the matched document to outcomeTableData
-  //         this.outcomeTableData.push(matchedDocument);
+  //   const assignTo = this.projectForm.get('Assigned_To')?.value;
+  //   const jobRole = this.projectForm.get('jobRole')?.value;
 
-  //         // Mark the document as selected in outcomeCategories
-  //         matchedDocument.selected = true;
+  //   const tagsValue = this.projectForm.get('tags')?.value;
+  //   const noOfDays = this.projectForm.get('noOfDays')?.value;
+  //   const sequenceNo = this.projectForm.get('sequenceNo')?.value;
+
+  //   let tagsString = '';
+  //   // console.log('tagsValue', tagsValue)
+
+  //   if (Array.isArray(tagsValue)) {
+  //     tagsString = tagsValue.map(tag => {
+  //       if (typeof tag === 'string') {
+  //         return tag;
+  //       } else if (tag.display) {
+  //         return tag.display;
+  //       } else {
+  //         return '';
   //       }
-  //     });
-
-  //     // Update the temporary data for cancel functionality
-  //     this.tempOutcomeTableData = cloneDeep(this.outcomeTableData);
+  //     }).join(',');
   //   }
+
+  //   const payload: TemplateInterface | any = {
+  //     Mkey: 0,
+  //     Building_Type: buildingType,
+  //     Building_Standard: buildingStandard,
+  //     Statutory_Authority: statutoryAuthority,
+  //     Main_Abbr: projectAbbreviation,
+  //     Short_Description: shortDescription,
+  //     Long_Description: longDescription,
+  //     Authority_Department: authorityDept,
+  //     Resposible_Emp_Mkey: assignTo,
+  //     Job_Role: jobRole,
+  //     Tags: tagsString,
+  //     Days_Requierd: noOfDays,
+  //     Seq_Order: sequenceNo,
+  //     Created_By: created_by,
+  //     End_Result_Doc_Lst: this.outcomeTableData.reduce((acc: any, item: any) => {
+  //       const category = item.documentCategory;
+  //       const typeMkey = item.Doc_Type_Mkey;
+  //       console.log('item: ',item)
+  //       if (acc[category]) {
+  //         acc[category] += `,${typeMkey}`;
+  //       } else {
+  //         acc[category] = `${typeMkey}`;
+  //       }
+  //       return acc;
+  //     }, {}),
+
+  //     Checklist_Doc_Lst: this.checkListTableData.reduce((acc: any, item: any) => {
+
+  //       const category = item.documentCategory;
+  //       const typeMkey = item.Doc_Type_Mkey;
+  //       console.log('item: ',item)
+  //       if (acc[category]) {
+  //         acc[category] += `,${typeMkey}`;
+  //       } else {
+  //         acc[category] = `${typeMkey}`;
+  //       }
+  //       return acc;
+  //     }, {}),
+  //     // Subtask_List: Subtask[];
+  //     Sanctioning_Department_List: null,
+  //     Session_User_Id: created_by,
+  //     Business_Group_Id: Business_Group_ID
+  //   }
+
+
+
+  //   console.log('Updated Table outcomeTableData:', this.outcomeTableData);
+  //   console.log('Updated Table checkListTableData:', this.checkListTableData);
+  //   console.log('Check payload', payload);
   // }
+
+
+  onCreate() {
+  const {
+    building,
+    standard,
+    authority,
+    projectAbbreviation,
+    shortDescription,
+    longDescription,
+    department,
+    Assigned_To,
+    jobRole,
+    tags,
+    noOfDays,
+    sequenceNo
+  } = this.projectForm.value;
+
+  const created_by = this.authData?.Session_User_Id;
+  const Business_Group_ID = this.authData?.Business_Group_Id;
+
+  const payload: TemplateInterface  = {
+    Mkey: 0,
+    Building_Type: building,
+    Building_Standard: standard,
+    Statutory_Authority: authority,
+    Main_Abbr: projectAbbreviation,
+    Short_Description: shortDescription,
+    Long_Description: longDescription,
+    Authority_Department: department,
+    Resposible_Emp_Mkey: Assigned_To,
+    Job_Role: jobRole,
+    Tags: this.formatTags(tags),
+    Days_Requierd: noOfDays,
+    Seq_Order: sequenceNo,
+    Created_By: created_by,
+    End_Result_Doc_Lst: this.reduceDocumentList(this.outcomeTableData),
+    Checklist_Doc_Lst: this.reduceDocumentList(this.checkListTableData),
+    Sanctioning_Department_List: [],
+    Subtask_List:[],
+    Session_User_Id: created_by,
+    Business_Group_Id: Business_Group_ID
+  };
+
+  const url = 'Approval-Template-Insert-Update-NT'
+
+   console.log('Check payload', payload);
+  this.apiService.postDetails(url, payload, false, false, true).subscribe({
+      next:(res)=>{
+        console.log('res ',res)
+      }
+    } 
+  )
+    
+  
+
+  // console.log('Updated Table outcomeTableData:', this.outcomeTableData);
+  // console.log('Updated Table checkListTableData:', this.checkListTableData);
+  // console.log('Check payload', payload);
+}
+
+
+private formatTags(tagsValue: any): string {
+  if (!Array.isArray(tagsValue)) return '';
+  return tagsValue.map(tag => typeof tag === 'string' ? tag : tag.display || '').join(',');
+}
+
+ 
+
+private reduceDocumentList(docList: any[]): { [key: string]: string } {
+  //console.log('docList: ', docList)
+  return docList.reduce((acc, item) => {
+    const { documentCategory, Doc_Type_Mkey } = item;
+    acc[documentCategory] = acc[documentCategory]
+      ? `${acc[documentCategory].trim()},${Doc_Type_Mkey}`
+      : `${Doc_Type_Mkey}`;
+    return acc;
+  }, {});
+}
+
+
+
+
 
   resetGridBooleans() {
     this.showOutcome = false;

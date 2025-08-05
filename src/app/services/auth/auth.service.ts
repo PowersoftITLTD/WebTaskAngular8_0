@@ -17,7 +17,7 @@ const endpointPaths = {
   login: '/Authentication/Login_NT',
   commonApi: '/CommonApi',
   viewClassification: '/ViewClassification',
-  GetAbbrAndShortAbbr:'/ApprovalTemplate'
+  ApprovalTemplate:'/ApprovalTemplate'
 };
 
 @Injectable({
@@ -32,7 +32,7 @@ export class AuthService {
     return this.http.post(`${environment.apiBaseUrl}${endpointPaths.login}`, credential);
   }
 
-  postDetails(url: string, body: Object, isCommonApi?: boolean, viewClassification?: boolean, GetAbbrAndShortAbbr?:boolean): Observable<any> {
+  postDetails(url: string, body: Object, isCommonApi?: boolean, viewClassification?: boolean, ApprovalTemplate?:boolean): Observable<any> {
     if (isCommonApi) {
       url = endpointPaths.commonApi + '/' + url;
     }
@@ -40,9 +40,12 @@ export class AuthService {
       url = endpointPaths.viewClassification + '/' + url;
     }    
 
-    if (GetAbbrAndShortAbbr){
-       url = endpointPaths.GetAbbrAndShortAbbr + '/' + url
+    if (ApprovalTemplate){
+       url = endpointPaths.ApprovalTemplate + '/' + url
     }
+
+    console.log('`${environment.apiBaseUrl}${url}`',`${environment.apiBaseUrl}${url}`);
+    console.log('body: ', body)
 
     // console.log('check url: ', `${environment.apiBaseUrl}${url}`)
     return this.http.post(`${environment.apiBaseUrl}${url}`, body);
@@ -51,7 +54,7 @@ export class AuthService {
 
   getDetails( body:Object|any): Observable<any>{
     console.log('body getDetails: ', body)
-    let url = `${endpointPaths.GetAbbrAndShortAbbr}?Building=${body?.buildingType}&Standard=${body?.buildingStandard}&Authority=${body?.statutoryAuthority}`
+    let url = `${endpointPaths.ApprovalTemplate}?Building=${body?.buildingType}&Standard=${body?.buildingStandard}&Authority=${body?.statutoryAuthority}`
     console.log(`url: ${environment.apiBaseUrl}${url}`)
     return this.http.get(`${environment.apiBaseUrl}${url}`)
   }
