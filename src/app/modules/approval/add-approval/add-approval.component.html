@@ -539,7 +539,122 @@
 
     <!-- Authority -->
     @if (showAuthority) {
+
       <div class="container-add mt-3">
+        <div class="flex align-items-center justify-content-between gap-2 mb-3">
+          <h3 class="m-0">Authority</h3>
+          <div class="flex align-items-center gap-2">
+            <button pButton class="tm-primary-btn" (click)="resetGridBooleans(); onAuthoritySave()">
+              Save
+            </button>
+            <button
+              pButton
+              class="tm-primary-outline"
+              [outlined]="true"
+              severity="secondary"
+              (click)="resetGridBooleans(); onAuthorityCancel()"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+        <div class="authority-add mb-3">
+          <div class="formgrid grid">
+            <div class="field col-12 md:col-2">
+              <label for="level">Level</label>
+              <input
+                id="level"
+                type="number"
+                [min]="1"
+                placeholder="Enter Level"
+                pInputText
+                class="w-full"
+                [(ngModel)]="currentSanctioningLevel"
+                #level="ngModel"
+                (input)="checkLevel(level)"
+              />
+              @if (level.invalid) {
+                <small class="text-red-600">Level already exist</small>
+              }
+            </div>
+            <div class="field col-12 md:col-4">
+              <label for="SanctioningDepartment">Sanctioning Department</label>
+              <input
+                id="SanctioningDepartment"
+                type="text"
+                placeholder="Enter Sanctioning Department"
+                pInputText
+                class="w-full"
+                [(ngModel)]="currentSanctioningDepartment"
+              />
+            </div>
+            <div class="field col-12 md:col-3">
+              <label for="SanctioningAuthority">Sanctioning Authority</label>
+              <p-dropdown
+                id="SanctioningAuthority"
+                [options]="sanctioningList"
+                [(ngModel)]="selectedSanctioningAuthority"
+                optionLabel="Type_Desc"
+                placeholder="Enter Sanctioning Authority"
+              />
+            </div>
+            <div class="field col-12 md:col-3">
+                <label for="startDate">Start Date</label>
+                <p-calendar #startDatePicker [(ngModel)]="startDate" name="startDate"
+                          [showIcon]="true" [showButtonBar]="true" dateFormat="dd M yy"></p-calendar>
+            </div>
+
+            <div class="field col-12 md:col-3">
+                <label for="startDate">End Date</label>
+                <p-calendar #endDatePicker [(ngModel)]="endDate" name="endDate"
+                          [showIcon]="true" [showButtonBar]="true" dateFormat="dd M yy"></p-calendar>
+            </div>
+            <div class="field col-12 md:col-1">
+              <label for="Mode">Mode</label>
+              <div class="w-ful">
+                <p-inputSwitch [(ngModel)]="currentSanctioningMode" />
+              </div>
+            </div>
+
+            <div class="field col-12 md:col-2">
+              <div class="flex flex-column align-items-start gap-2">
+                <button
+                  pButton
+                  class="tm-primary-outline"
+                  [outlined]="true"
+                  [label]="isEditingAuthority ? 'Update' : 'Adds'"
+                  [icon]="'pi ' + (isEditingAuthority ? 'pi-check' : 'pi-plus')"
+                  severity="secondary"
+                  (click)="onAddSanctioning()"
+                ></button>
+                @if (isEditingAuthority) {
+                  <button
+                    pButton
+                    class="tm-primary-outline"
+                    [outlined]="true"
+                    label="Cancel"
+                    icon="pi pi-times"
+                    severity="secondary"
+                    (click)="cancelEditAuthority()"
+                  ></button>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <app-tm-table
+          [columns]="authorityTableColumns_2"
+          [data]="levelTableData"
+          [selectable]="false"
+          [status]="false"
+          (onDelete)="deleteAuthority($event)"
+          (onEdit)="editAuthority($event)"
+          [customAction]="actions"
+        >
+        </app-tm-table>
+      </div>
+      <!-- <div class="container-add mt-3">
         <div class="flex align-items-center justify-content-end gap-2 mb-3">
           <button pButton class="tm-primary-btn" (click)="showAuthority = false">Save</button>
           <button pButton class="tm-primary-outline" [outlined]="true" severity="secondary"
@@ -551,50 +666,32 @@
           <div class="formgrid grid">
             <div class="field col-12 md:col-2">
               <label for="level">Level</label>
-              <input id="level" type="text" placeholder="Enter Level" pInputText class="w-full" />
+              <input id="level" type="text" placeholder="Enter Level" pInputText class="w-full" [(ngModel)]="formData.level" name="level" />
             </div>
             <div class="field col-12 md:col-3">
               <label for="SanctioningDepartment">Sanctioning Department</label>
-              <input id="SanctioningDepartment" type="text" placeholder="Enter Sanctioning Department" pInputText
-                class="w-full" />
+              <input id="SanctioningDepartment" type="text" placeholder="Enter Sanctioning Department" pInputText class="w-full" [(ngModel)]="formData.sanctioningDepartment" name="sanctioningDepartment" />
             </div>
             <div class="field col-12 md:col-3">
               <label for="SanctioningAuthority">Sanctioning Authority</label>
-              <input id="SanctioningAuthority" type="text" placeholder="Enter Sanctioning Authority" pInputText
-                class="w-full" />
+              <input id="SanctioningAuthority" type="text" placeholder="Enter Sanctioning Authority" pInputText class="w-full" [(ngModel)]="formData.sanctioningAuthority" name="sanctioningAuthority" />
             </div>
             <div class="field col-12 md:col-2">
-              <label for="SanctioningAuthority">Start Date</label>
-              <a class="outline-overlay-btn" (click)="completionDate.toggle($event)"
-                [ngClass]="{ active: selectedCompletionDate }">
-                <i class="pi pi-calendar"></i>
-                <span class="font-semibold text-700">
-                  @if (selectedCompletionDate) {
-                  {{ selectedCompletionDate | date: 'dd MMM y' }}
-                  } @else {
-                  Start Date
-                  }
-                </span>
-              </a>
+              <label for="startDate">Start Date</label>
+              <p-calendar #startDatePicker [(ngModel)]="formData.startDate" name="startDate"
+                          [showIcon]="true" [showButtonBar]="true" dateFormat="dd M yy"></p-calendar>
             </div>
+
             <div class="field col-12 md:col-2">
-              <label for="SanctioningAuthority">End Date</label>
-              <a class="outline-overlay-btn" (click)="completionDate.toggle($event)"
-                [ngClass]="{ active: selectedCompletionDate }">
-                <i class="pi pi-calendar"></i>
-                <span class="font-semibold text-700">
-                  @if (selectedCompletionDate) {
-                  {{ selectedCompletionDate | date: 'dd MMM y' }}
-                  } @else {
-                  End Date
-                  }
-                </span>
-              </a>
+              <label for="endDate">End Date</label>
+              <p-calendar #endDatePicker [(ngModel)]="formData.endDate" name="endDate"
+                          [showIcon]="true" [showButtonBar]="true" dateFormat="dd M yy"></p-calendar>
             </div>
+
             <div class="field col-12 md:col-2">
               <label for="Mode">Mode</label>
               <div class="w-ful">
-                <p-inputSwitch />
+                <p-inputSwitch [(ngModel)]="formData.mode" name="mode"></p-inputSwitch>
               </div>
             </div>
           </div>
@@ -602,12 +699,19 @@
 
         <div class="mb-3">
           <button pButton class="tm-primary-outline" [outlined]="true" label="Add" icon="pi pi-plus"
-            severity="secondary"></button>
+            (click)="addAuthority()" severity="secondary">
+          </button>
         </div>
 
-        <app-tm-table [columns]="authorityTableColumns" [data]="authorityTableData" [selectable]="false" [status]="false">
+        <app-tm-table
+          [columns]="authorityTableColumns"
+          [data]="levelTableData"
+          [selectable]="true"
+          [status]="false"   
+          >
         </app-tm-table>
-      </div>
+
+      </div> -->
     }
 
     <!--Sub task list-->

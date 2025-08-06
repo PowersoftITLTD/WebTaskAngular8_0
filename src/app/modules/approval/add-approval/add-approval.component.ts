@@ -1,5 +1,5 @@
 import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, NgModel, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { cloneDeep } from 'lodash';
 import { MultiSelect } from 'primeng/multiselect';
 import { AuthService } from '../../../services/auth/auth.service';
@@ -38,10 +38,19 @@ export class AddApprovalComponent {
   tempOutcomeTableData: any = [];
   tempOutcomeCategories: any = [];
   assignedPeopleList: any[] = [];
-
+  sanctioningList: any[] = [];
   authorityTableData: any[] = [];
 
+  levelTableData: any[] = [];
 
+
+ selectedSanctioningAuthority: any;
+  currentSanctioningLevel: any;
+  currentSanctioningDepartment: any;
+  currentSanctioningMode: any;
+
+  startDate:any;
+  endDate:any;
 
   private isCheckValueCalled: boolean = false;
 
@@ -55,7 +64,18 @@ export class AddApprovalComponent {
   department: any = [];
   jobRole: any = [];
 
+  tempAuthorityTableData: any = [];
+
   activePanel: 'checklist' | 'outcome' | null = null;
+
+  formData = {
+    level: '',
+    sanctioningDepartment: '',
+    sanctioningAuthority: '',
+    startDate: null,
+    endDate: null,
+    mode: false
+  };
 
 
   // Dropdowns
@@ -82,11 +102,13 @@ export class AddApprovalComponent {
   showOutcome: boolean = false;
   showAuthority: boolean = false;
   showSubTaskList: boolean = false;
+  isEditingAuthority: boolean = false;
 
   // Calendar
   numberOfDays: number = 0;
   selectedDate: Date | null = null;
   selectedCompletionDate: Date | null = null;
+  editedAuthorityId: number | null = null;
   todayDate = new Date();
 
   tentativeStartDate: Date | null = null;
@@ -94,7 +116,7 @@ export class AddApprovalComponent {
   actualStartDate: Date | null = null;
   actualEndDate: Date | null = null;
   @Input() isEditMode: boolean = false;
-  @Input() formData: any;
+  //@Input() formData: any;
   @ViewChild('multiSelect') multiSelect!: MultiSelect;
   @Input() isSubTask: boolean = false;
   @Input() parentTaskData: any;
@@ -193,6 +215,7 @@ export class AddApprovalComponent {
         this.getBuildingStandard(),
         this.statutoryAuthority(),
         this.getTagsList(),
+        this.getSancationDetails()
       ]).subscribe({
         next: () => {
           if (this.isEditMode) {
@@ -218,6 +241,21 @@ export class AddApprovalComponent {
   }
 
 
+  deleteAuthority(event: any) {
+    // Mark as deleted rather than removing (if you need to track deletions for API)
+    // if (this.isEditMode) {
+    //   const index = this.authorityTableData.findIndex((item: any) => item.Mkey === event.Mkey);
+    //   if (index !== -1) {
+    //     this.authorityTableData[index].Delete_Flag = 'Y';
+    //   }
+    // } else {
+    // For new items, just remove from array
+    this.authorityTableData = this.authorityTableData.filter(
+      (item: any) => item.Mkey !== event.mkey,
+    );
+    // }
+    // this.notificationService.success('Authority deleted successfully');
+  }
 
   duplicateAbbrivationValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -510,6 +548,13 @@ export class AddApprovalComponent {
     { header: '', field: 'actions', type: 'actions' }
   ];
 
+authorityTableColumns_2 = [
+  { field: 'index', header: 'Serial No.' },
+  { field: 'Sanctioning_Department', header: 'Description' },
+  { field: 'Type_Desc', header: 'Department' },
+  { field: 'Type_Code', header: 'Code' },
+  { field: 'Mode', header: 'Active', isSwitch: true },
+];
 
 
 
@@ -532,6 +577,19 @@ export class AddApprovalComponent {
 
   confirmSelection() {
     this.selectedCompletionDate = this.selectedDate;
+  }
+
+    onAuthoritySave() {
+    if (this.isEditingAuthority) {
+      // If editing, we've already removed the old version
+      this.isEditingAuthority = false;
+      this.editedAuthorityId = null;
+    }
+    this.tempAuthorityTableData = cloneDeep(this.authorityTableData);
+
+    this.currentSanctioningLevel = null;
+    this.selectedSanctioningAuthority = null;
+    this.currentSanctioningDepartment = null;
   }
 
 
@@ -887,6 +945,24 @@ export class AddApprovalComponent {
     );
   }
 
+  getSancationDetails() {
+    let url = 'Sanctioning-Authority_NT';
+    const body = {
+      Session_User_ID: this.authData?.Session_User_Id,
+      Business_Group_ID: this.authData?.Business_Group_Id,
+    };
+    return this.apiService.postDetails(url, body, false, true).pipe(
+      tap(
+        (res: any) => {
+          this.sanctioningList = res[0]?.Data;
+        },
+        (err) => {
+          console.log(err);
+        },
+      ),
+    );
+  }
+
   onSelectOfAssignedPeople() {
     const selectedItem = this.assignedPeopleList.find(
       (item: any) => item.MKEY == this.projectForm.get('Assigned_To')?.value,
@@ -973,7 +1049,37 @@ export class AddApprovalComponent {
     }
   }
 
+  addAuthority() {
+    const newEntry = {
+      level: this.formData.level,
+      sanctioningDepartment: this.formData.sanctioningDepartment,
+      sanctioningAuthority: this.formData.sanctioningAuthority,
+      startDate: this.formData.startDate,
+      endDate: this.formData.endDate,
+      mode: this.formData.mode
+    };
 
+
+    console.log('newEntry: ', newEntry);
+    console.log('this.levelTableData: ',  this.levelTableData);
+
+    this.levelTableData = [...this.levelTableData, newEntry];
+
+    console.log('levelTableData: ', this.levelTableData);
+
+    // Optional: Clear form after adding
+    // this.formData = {
+    //   level: '',
+    //   sanctioningDepartment: '',
+    //   sanctioningAuthority: '',
+    //   startDate: null,
+    //   endDate: null,
+    //   mode: false
+    // };
+  }
+
+
+  
   // onCreate() {
 
   //   const created_by = this.authData?.Session_User_Id;
@@ -1122,6 +1228,28 @@ export class AddApprovalComponent {
   // console.log('Check payload', payload);
 }
 
+ onAuthorityCancel() {
+    if (this.isEditingAuthority) {
+      // Restore the original item if editing was cancelled
+      const originalItem = this.tempAuthorityTableData.find(
+        (item: any) => item.Mkey === this.editedAuthorityId,
+      );
+      if (originalItem) {
+        this.authorityTableData = [...this.authorityTableData, originalItem];
+      }
+      this.isEditingAuthority = false;
+      this.editedAuthorityId = null;
+    }
+    this.authorityTableData = cloneDeep(this.tempAuthorityTableData);
+
+    this.currentSanctioningLevel = null;
+    this.selectedSanctioningAuthority = null;
+    this.currentSanctioningDepartment = null;
+  }
+
+
+
+
 
 private formatTags(tagsValue: any): string {
   if (!Array.isArray(tagsValue)) return '';
@@ -1141,8 +1269,38 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
   }, {});
 }
 
+ editAuthority(event: any) {
+   // Store the original item in case of cancellation
+    const originalItem = this.authorityTableData.find((item: any) => item.Mkey === event.Mkey);
+
+    if (!originalItem) return;
+
+    // Set up editing state
+    this.isEditingAuthority = true;
+    this.editedAuthorityId = event.Mkey;
+
+    // Populate form fields
+    this.currentSanctioningLevel = originalItem.Level;
+    this.currentSanctioningDepartment = originalItem.Sanctioning_Department;
+    this.selectedSanctioningAuthority = this.sanctioningList.find(
+      (auth) => auth.Mkey === originalItem.Mkey,
+    );
+    this.currentSanctioningMode = originalItem.isActive;
+
+    // Remove from table (will be re-added when saved)
+    this.authorityTableData = this.authorityTableData.filter(
+      (item: any) => item.Mkey !== event.Mkey,
+    );
+  }
 
 
+  actions = [
+    {
+      label: 'Edit',
+      icon: 'pi pi-pencil',
+      command: (item: any) => this.editAuthority(item),
+    },
+  ];
 
 
   resetGridBooleans() {
@@ -1150,6 +1308,78 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
     this.showCheckList = false;
     this.showAuthority = false;
   }
+
+   cancelEditAuthority() {
+    // Restore the original item
+    const originalItem = this.tempAuthorityTableData.find(
+      (item: any) => item.Mkey === this.editedAuthorityId,
+    );
+
+    if (originalItem) {
+      this.authorityTableData = [...this.authorityTableData, originalItem];
+    }
+
+    this.resetAuthorityForm();
+    this.isEditingAuthority = false;
+    this.editedAuthorityId = null;
+  }
+
+
+   private resetAuthorityForm() {
+    this.currentSanctioningLevel = null;
+    this.selectedSanctioningAuthority = null;
+    this.currentSanctioningDepartment = null;
+    this.currentSanctioningMode = null;
+  }
+
+
+ checkLevel(control: NgModel) {
+    const levelExist = this.authorityTableData.some(
+      (data: any) => data.Level === control.control.value,
+    );
+    if (levelExist) {
+      control.control.setErrors({ error: 'Level already exist' });
+    } else {
+      control.control.setErrors(null);
+    }
+  }
+
+
+    onAddSanctioning() {
+    if (
+      this.currentSanctioningLevel &&
+      this.selectedSanctioningAuthority &&
+      this.currentSanctioningDepartment
+    ) {
+      const authority = {
+        ...this.selectedSanctioningAuthority,
+        Level: this.currentSanctioningLevel,
+        Sanctioning_Department: this.currentSanctioningDepartment,
+        isActive: this.currentSanctioningMode,
+      };
+
+      if (this.isEditingAuthority && this.editedAuthorityId) {
+        // For edit, preserve the original Mkey if it exists
+        authority.Mkey = this.editedAuthorityId;
+      }
+
+      this.levelTableData.push(authority);
+
+      console.log('levelTableData: ', this.levelTableData)
+
+      // Reset form fields
+      this.resetAuthorityForm();
+
+      // this.notificationService.success(
+      //   this.isEditingAuthority ? 'Authority updated successfully' : 'Authority added successfully',
+      // );
+
+      // Reset editing state
+      this.isEditingAuthority = false;
+      this.editedAuthorityId = null;
+    }
+  }
+
 
   patchForm() { }
 }

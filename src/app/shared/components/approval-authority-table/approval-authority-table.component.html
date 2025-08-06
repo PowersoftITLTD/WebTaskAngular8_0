@@ -1,0 +1,38 @@
+<!-- approval-authority-table.component.html -->
+<p-table [value]="data" responsiveLayout="scroll">
+  <ng-template pTemplate="header">
+    <tr>
+      <th *ngFor="let col of columns">
+        {{ col.header }}
+      </th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+    <tr>
+      <td *ngFor="let col of columns">
+        <ng-container [ngSwitch]="col.field">
+          <!-- Custom format for startDate -->
+          <ng-container *ngSwitchCase="'startDate'">
+            {{ row[col.field] | date: 'dd MMM y' }}
+          </ng-container>
+
+          <!-- Custom format for endDate -->
+          <ng-container *ngSwitchCase="'endDate'">
+            {{ row[col.field] | date: 'dd MMM y' }}
+          </ng-container>
+
+          <!-- Boolean value handling for 'mode' -->
+          <ng-container *ngSwitchCase="'mode'">
+            {{ row[col.field] ? 'Yes' : 'No' }}
+          </ng-container>
+
+          <!-- Default display -->
+          <ng-container *ngSwitchDefault>
+            {{ row[col.field] }}
+          </ng-container>
+        </ng-container>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

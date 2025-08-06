@@ -43,6 +43,7 @@ import { TableModule } from 'primeng/table';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { ListboxModule } from 'primeng/listbox';
+import { ApprovalAuthorityTableComponent } from './components/approval-authority-table/approval-authority-table.component';
 
 
 @NgModule({
@@ -65,6 +66,7 @@ import { ListboxModule } from 'primeng/listbox';
     ConfirmDialogComponent,
     ShortNamePipe,
     ApprovalTableComponent,
+    ApprovalAuthorityTableComponent,
     
   ],
   imports: [
@@ -124,7 +126,8 @@ import { ListboxModule } from 'primeng/listbox';
     InputTextModule,
     DropdownModule,
     ButtonModule,
-    ListboxModule
+    ListboxModule,
+    ApprovalAuthorityTableComponent
   ],
 })
 export class SharedModule {}

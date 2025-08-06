@@ -11,7 +11,9 @@
           } @else if (tasks.key === 'In Progress') {
             In progress
           } @else if (tasks.key === 'Completed') {
-            For Review
+            Completed
+          } @else if(tasks.key === 'Close Initiated' || tasks.key === 'Cancel Initiated'){
+            In Review
           }
         </span>
         <p-badge [value]="tasks.value.length" severity="danger" />

@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { InputSwitchChangeEvent } from 'primeng/inputswitch';
 
 export interface TableColumn {
@@ -14,14 +14,19 @@ export interface TableColumn {
   sortKey?: string;
   isSwitch?: boolean;
   actionButton?: boolean;
-  isNestedTree?: boolean; // Check whether the column has a nested Tree structure
+  isNestedTree?: boolean;
   isColumnVisible?: boolean;
+  isLink?: boolean;
+  isDropdown?: boolean; // New property for dropdown columns
+  dropdownOptions?: { label: string; value: any }[]; // Options for dropdown
+  isHtml?: boolean;
+  isDownload?: boolean;
 }
 
 @Component({
   selector: 'app-tm-table',
   templateUrl: './tm-table.component.html',
-  styleUrl: './tm-table.component.scss',
+  styleUrls: ['./tm-table.component.scss'],
   providers: [DatePipe],
 })
 export class TmTableComponent {
@@ -30,16 +35,27 @@ export class TmTableComponent {
   @Input() selectable: boolean = false;
   @Input() status: boolean = false;
   @Input() customClassValue: any = '';
-  @Input() nestedColumns: TableColumn[] = []; //It will have details of expandable tree columns and their binded variables
+  @Input() nestedColumns: TableColumn[] = [];
   @Output() onEdit = new EventEmitter<any>();
   @Output() onDelete = new EventEmitter<any>();
+  @Output() onUpdateProgress = new EventEmitter<any>();
+  @Output() onInitiate = new EventEmitter<any>();
   @Output() selectionChange = new EventEmitter<any[]>();
-  @Output() onViewDetails = new EventEmitter<any[]>();
+  @Output() onViewDetails = new EventEmitter<any>();
   @Input() loading: boolean = false;
   @Output() onSortChange = new EventEmitter<any>();
   @Input() customAction: any[] | undefined;
   @Output() onSelect = new EventEmitter<any>();
   @Output() onToggleSwitch = new EventEmitter<any>();
+  @Output() onLinkClick = new EventEmitter<any>();
+  @Output() onDropdownChange = new EventEmitter<{ item: any; value: any }>(); // New Output for dropdown
+  @Output() checkboxClick = new EventEmitter<any>();
+
+  @Input() isUpdateProgressVisible: boolean = true;
+  @Input() authData: any;
+  @Input() showActionCondition?: (task: any) => boolean;
+  @Input() actionFilterCondition?: (item: any, actionLabel: string) => boolean;
+
 
   allSelected = false;
   indeterminate = false;
@@ -54,24 +70,32 @@ export class TmTableComponent {
       icon: 'pi pi-pencil',
       command: () => this.editItem(),
     },
+    // {
+    //   label: 'Delete',
+    //   icon: 'pi pi-trash',
+    //   command: () => this.deleteItem(),
+    // },
     {
-      label: 'Delete',
-      icon: 'pi pi-trash',
-      command: () => this.deleteItem(),
+      label: 'Update Progress',
+      icon: 'pi pi-spinner',
+      command: () => this.updateItem(),
+    },
+    {
+      label: 'Initiate',
+      icon: 'pi pi-file-pdf',
+      command: () => this.initateItem(),
     },
   ];
 
-  constructor(private datePipe: DatePipe) {}
+  constructor(private datePipe: DatePipe) {
+    console.log('Data lul: ', this.data)
+  }
 
   applyPipe(value: any, pipe?: string, pipeParams?: any): any {
-    if (!pipe) {
-      return value;
-    }
-
+    if (!pipe) return value;
     if (pipe === 'date' && this.isDate(value)) {
       return this.datePipe.transform(value, pipeParams);
     }
-
     return value;
   }
 
@@ -80,6 +104,7 @@ export class TmTableComponent {
   }
 
   toggleSelectAll(event: any): void {
+
     const checked = event.target.checked;
     this.allSelected = checked;
     this.indeterminate = false;
@@ -87,19 +112,19 @@ export class TmTableComponent {
       if (item?.isCancel) return;
       item.selected = checked;
     });
-    this.emitSelectedItems(); // Emit selected items
+    this.emitSelectedItems();
   }
 
   updateSelection(): void {
     const selectedItems = this.data.filter((item) => item.selected);
     this.allSelected = selectedItems.length === this.data.length;
     this.indeterminate = selectedItems.length > 0 && selectedItems.length < this.data.length;
-    this.emitSelectedItems(); // Emit selected items
+    this.emitSelectedItems();
   }
 
   emitSelectedItems(): void {
     const selectedItems = this.data.filter((item) => item.selected && !item?.isCancel);
-    this.selectionChange.emit(selectedItems); // Emit the selected items
+    this.selectionChange.emit(selectedItems);
   }
 
   editItem() {
@@ -109,7 +134,12 @@ export class TmTableComponent {
   deleteItem() {
     this.onDelete.emit(this.selectedItem);
   }
-
+  updateItem() {
+    this.onUpdateProgress.emit(this.selectedItem);
+  }
+  initateItem() {
+    this.onInitiate.emit(this.selectedItem);
+  }
   viewDetails(item: any) {
     this.onViewDetails.emit(item);
   }
@@ -117,32 +147,25 @@ export class TmTableComponent {
   getStatusClass(status: string | undefined): string {
     if (!status) return '';
     switch (status) {
-      case 'notStarted':
-        return 'notStarted status';
-      case 'inProcess':
-        return 'inProcess status';
-      case 'completed':
-        return 'completed status';
+      case 'Completed':
+        return 'status completed';
+      case 'In Progress':
+      case 'Others':
+        return 'status inProcess';
       default:
-        return ''; // Default class or no class
+        return 'status notStarted';
     }
   }
 
   sortBy(field: string | undefined) {
     if (!field) return;
     if (this.currentSortField === field) {
-      // Toggle sort direction
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
-      // update field and reset direction to ascending
       this.currentSortField = field;
       this.sortDirection = 'asc';
     }
-
-    this.onSortChange.emit({
-      SortBy: this.currentSortField,
-      SortOrder: this.sortDirection,
-    });
+    this.onSortChange.emit({ SortBy: this.currentSortField, SortOrder: this.sortDirection });
   }
 
   clearAllCheckbox(): void {
@@ -152,14 +175,51 @@ export class TmTableComponent {
     this.emitSelectedItems();
   }
 
-  emitSelectedItem(item: any) {
-    this.onSelect.emit(item);
+ emitSelectedItem(item: any) {
+  this.selectedItem = item;
+  this.onSelect.emit(item);
+
+  if (Array.isArray(this.customAction)) {
+    const baseActions = [...this.customAction];
+
+    const filteredActions = baseActions
+      .filter((action) => {
+        if (this.actionFilterCondition) {
+          return this.actionFilterCondition(item, action.label);
+        }
+        return true; // default: include all
+      })
+      .map((action) => ({
+        ...action,
+        command: () => action.command(item),
+      }));
+
+    this.customAction = filteredActions;
   }
+}
 
   toggleSwitch(event: InputSwitchChangeEvent, item: any) {
-    this.onToggleSwitch.emit({
-      checked: event.checked,
-      item: item,
-    });
+    this.onToggleSwitch.emit({ checked: event.checked, item });
+  }
+
+  onDropdownValueChange(selectedValue: any, item: any) {
+    item.selectedOption = selectedValue; // Update the item with the selected value
+    this.onDropdownChange.emit({ item, value: selectedValue });
+  }
+  onCheckboxClick(event: any, item: any) {
+    this.checkboxClick.emit(item); // Emit the selected item
+    event.stopPropagation();
+  }
+
+  handleLinkClick(item: any) {
+    this.onLinkClick.emit(item);
+  }
+  shouldShowActionIcon(item: any): boolean {
+    // If parent passed a showActionCondition function, use it
+    if (this.showActionCondition) {
+      return this.showActionCondition(item);
+    }
+    // Otherwise, show the icon if any customAction is present
+    return Array.isArray(this.customAction) && this.customAction.length > 0;
   }
 }
