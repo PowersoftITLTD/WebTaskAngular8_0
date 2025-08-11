@@ -9,6 +9,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { storedDetails } from '../../../store/auth/auth.selectors';
 import { NotificationService } from '../../../services/notification.service';
 import { TemplateInterface } from '../../../shared/model/template.model';
+import { TableColumn } from '../../../shared/components/tm-table/tm-table.component';
 
 
 @Component({
@@ -241,21 +242,21 @@ export class AddApprovalComponent {
   }
 
 
-  deleteAuthority(event: any) {
-    // Mark as deleted rather than removing (if you need to track deletions for API)
-    // if (this.isEditMode) {
-    //   const index = this.authorityTableData.findIndex((item: any) => item.Mkey === event.Mkey);
-    //   if (index !== -1) {
-    //     this.authorityTableData[index].Delete_Flag = 'Y';
-    //   }
-    // } else {
-    // For new items, just remove from array
-    this.authorityTableData = this.authorityTableData.filter(
-      (item: any) => item.Mkey !== event.mkey,
-    );
-    // }
-    // this.notificationService.success('Authority deleted successfully');
-  }
+  // deleteAuthority(event: any) {
+  //   // Mark as deleted rather than removing (if you need to track deletions for API)
+  //   // if (this.isEditMode) {
+  //   //   const index = this.authorityTableData.findIndex((item: any) => item.Mkey === event.Mkey);
+  //   //   if (index !== -1) {
+  //   //     this.authorityTableData[index].Delete_Flag = 'Y';
+  //   //   }
+  //   // } else {
+  //   // For new items, just remove from array
+  //   this.authorityTableData = this.authorityTableData.filter(
+  //     (item: any) => item.Mkey !== event.mkey,
+  //   );
+  //   // }
+  //   // this.notificationService.success('Authority deleted successfully');
+  // }
 
   duplicateAbbrivationValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -410,6 +411,8 @@ export class AddApprovalComponent {
 
   onTableRowChange(event: { rowIndex: number, field: string, value: any }) {
 
+    console.log('onTableRowChange Event: ', event)
+
     const { rowIndex, field, value } = event;
 
     // Update the field in authorityTableData
@@ -515,6 +518,25 @@ export class AddApprovalComponent {
   }
 
 
+    columns: TableColumn[] = [
+        { header: 'Task', field: 'task', isNested: false, sortKey: 'task' },
+        { header: 'Assignee', field: 'assignee', isNested: false, sortKey: 'assignee' },
+        { header: 'Status', field: 'status', statusField: true, sortKey: 'status' },
+        {
+          header: 'Due Date',
+          field: 'dueDate',
+          pipe: 'date',
+          pipeParams: 'dd MMM yyyy',
+          sortKey: 'dueDate',
+        },
+        { header: 'Priority', field: 'priority', isNested: false, sortKey: 'priority' },
+        { header: 'Files', field: 'files', isNested: false },
+        { header: 'Tags', field: 'tags', isNested: false },
+        { header: 'Summary', field: 'summary', isNested: false },
+        { header: 'Actions', isAction: true },
+      ];
+
+
   authorityTableColumns: any = [
     { header: 'Sr No.', field: 'srNo', type: 'index' },
 
@@ -548,15 +570,17 @@ export class AddApprovalComponent {
     { header: '', field: 'actions', type: 'actions' }
   ];
 
-authorityTableColumns_2 = [
-  { field: 'index', header: 'Serial No.' },
-  { field: 'Sanctioning_Department', header: 'Description' },
-  { field: 'Type_Desc', header: 'Department' },
-  { field: 'Type_Code', header: 'Code' },
-  { field: 'Mode', header: 'Active', isSwitch: true },
-];
-
-
+  authorityTableColumns_2:any = [
+    { field: 'index', header: 'Serial No.' },
+    { field: 'Sanctioning_Department', header: 'Description' },
+    { field: 'Type_Desc', header: 'Department' },
+    { field: 'Type_Code', header: 'Code' },
+    { field:'Start_date', header:'Start Date'},
+    { field:'End_date', header:'End Date'},
+    { field: 'Mode', header: 'Active', isSwitch: true },
+    { field: 'Action', header: 'Actions', deleteActions:true }
+  
+  ];
 
   // Checklist
   searchQuery: string = '';
@@ -1060,12 +1084,12 @@ authorityTableColumns_2 = [
     };
 
 
-    console.log('newEntry: ', newEntry);
-    console.log('this.levelTableData: ',  this.levelTableData);
+    // console.log('newEntry: ', newEntry);
+    // console.log('this.levelTableData: ',  this.levelTableData);
 
     this.levelTableData = [...this.levelTableData, newEntry];
 
-    console.log('levelTableData: ', this.levelTableData);
+   // console.log('levelTableData: ', this.levelTableData);
 
     // Optional: Clear form after adding
     // this.formData = {
@@ -1188,6 +1212,27 @@ authorityTableColumns_2 = [
   const created_by = this.authData?.Session_User_Id;
   const Business_Group_ID = this.authData?.Business_Group_Id;
 
+   const formArrayVal: FormArray = (this.projectForm.get('rows') as FormArray);
+    const val_of_formArr = formArrayVal.value;
+
+     console.log('val_of_formArr', val_of_formArr);
+
+    const subTasks = val_of_formArr
+      .filter((row: any) => {
+        // Check if any field is empty. You can adjust this check based on the specific fields you want to validate.
+        return row.subtasK_MKEY && row.sequentialNo && row.abbrivation;
+      })
+      .map((row: any, index: number) => {
+        return {
+          subtasK_MKEY: row.subtasK_MKEY,
+          seQ_NO: row.sequentialNo.toString(),
+          subtasK_ABBR: row.abbrivation,
+          // SUBTASK_TAGS: sub_tags || null
+        };
+      });
+
+      console.log('subTasks: ', subTasks)
+
   const payload: TemplateInterface  = {
     Mkey: 0,
     Building_Type: building,
@@ -1206,7 +1251,7 @@ authorityTableColumns_2 = [
     End_Result_Doc_Lst: this.reduceDocumentList(this.outcomeTableData),
     Checklist_Doc_Lst: this.reduceDocumentList(this.checkListTableData),
     Sanctioning_Department_List: [],
-    Subtask_List:[],
+    Subtask_List: subTasks || [],
     Session_User_Id: created_by,
     Business_Group_Id: Business_Group_ID
   };
@@ -1214,12 +1259,12 @@ authorityTableColumns_2 = [
   const url = 'Approval-Template-Insert-Update-NT'
 
    console.log('Check payload', payload);
-  this.apiService.postDetails(url, payload, false, false, true).subscribe({
-      next:(res)=>{
-        console.log('res ',res)
-      }
-    } 
-  )
+  // this.apiService.postDetails(url, payload, false, false, true).subscribe({
+  //     next:(res)=>{
+  //       console.log('res ',res)
+  //     }
+  //   } 
+  // )
     
   
 
@@ -1355,7 +1400,10 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
         ...this.selectedSanctioningAuthority,
         Level: this.currentSanctioningLevel,
         Sanctioning_Department: this.currentSanctioningDepartment,
+        Start_date:this.formatDate(this.startDate),
+        End_date:this.formatDate(this.endDate),        
         isActive: this.currentSanctioningMode,
+        actions:true
       };
 
       if (this.isEditingAuthority && this.editedAuthorityId) {
@@ -1379,6 +1427,27 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
       this.editedAuthorityId = null;
     }
   }
+
+  formatDate(dateStr:any) {
+    const date = new Date(dateStr);
+    // Get components in desired format
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    // const hours = String(date.getHours()).padStart(2, '0');
+    // const minutes = String(date.getMinutes()).padStart(2, '0');
+    // const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`; //T${hours}:${minutes}:${seconds}
+}
+
+deleteAuthority(rowData: any) {
+  const index = this.levelTableData.indexOf(rowData);
+  if (index !== -1) {
+    this.levelTableData.splice(index, 1);
+    console.log('Row deleted:', rowData);
+  }
+}
 
 
   patchForm() { }

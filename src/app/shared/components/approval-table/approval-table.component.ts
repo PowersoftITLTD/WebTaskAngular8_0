@@ -14,14 +14,14 @@ export class ApprovalTableComponent implements OnInit,OnChanges  {
 
 
   ngOnInit(): void {
-    console.log('Check the data: ', this.data);
+    // console.log('Check the data: ', this.data);
   }
 
 
    ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data']) {
-      console.log('Data changed:', this.data);
-    }
+    // if (changes['data']) {
+    //   console.log('Data changed:', this.data);
+    // }
   }
 
 selectDropdown(event: any): void {

@@ -44,8 +44,8 @@ export class AuthService {
        url = endpointPaths.ApprovalTemplate + '/' + url
     }
 
-    console.log('`${environment.apiBaseUrl}${url}`',`${environment.apiBaseUrl}${url}`);
-    console.log('body: ', body)
+    // console.log('`${environment.apiBaseUrl}${url}`',`${environment.apiBaseUrl}${url}`);
+    // console.log('body: ', body)
 
     // console.log('check url: ', `${environment.apiBaseUrl}${url}`)
     return this.http.post(`${environment.apiBaseUrl}${url}`, body);

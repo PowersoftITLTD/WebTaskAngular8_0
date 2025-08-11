@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { InputSwitchChangeEvent } from 'primeng/inputswitch';
 
 export interface TableColumn {
@@ -21,7 +21,9 @@ export interface TableColumn {
   dropdownOptions?: { label: string; value: any }[]; // Options for dropdown
   isHtml?: boolean;
   isDownload?: boolean;
+  deleteActions?:boolean;
 }
+
 
 @Component({
   selector: 'app-tm-table',
@@ -29,8 +31,8 @@ export interface TableColumn {
   styleUrls: ['./tm-table.component.scss'],
   providers: [DatePipe],
 })
-export class TmTableComponent {
-  @Input() columns: TableColumn[] = [];
+export class TmTableComponent implements OnChanges {
+  @Input() columns: any[] = [];
   @Input() data: any[] = [];
   @Input() selectable: boolean = false;
   @Input() status: boolean = false;
@@ -88,7 +90,14 @@ export class TmTableComponent {
   ];
 
   constructor(private datePipe: DatePipe) {
-    console.log('Data lul: ', this.data)
+   // console.log('Data lul: ', this.data)
+  }
+
+   ngOnChanges(changes: SimpleChanges): void {
+    console.log('Changes: ', changes);
+    if (changes['data'] && this.columns?.length) {
+        console.log('columns :', this.columns)
+    }
   }
 
   applyPipe(value: any, pipe?: string, pipeParams?: any): any {
@@ -221,5 +230,12 @@ export class TmTableComponent {
     }
     // Otherwise, show the icon if any customAction is present
     return Array.isArray(this.customAction) && this.customAction.length > 0;
+  }
+
+  deleteRow(item: any) {
+      const index = this.data.indexOf(item);
+      if (index > -1) {
+        this.data.splice(index, 1);
+    }
   }
 }

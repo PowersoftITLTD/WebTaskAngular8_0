@@ -3,193 +3,167 @@
     <thead>
       <tr>
         @if (selectable) {
-          <th>
-            <!-- <input
+        <th>
+          <!-- <input
               type="checkbox"
               class="custom-checkbox"
               [(ngModel)]="allSelected"
               (change)="toggleSelectAll($event)"
             /> -->
-            <!-- [indeterminate]="indeterminate" -->
-          </th>
+          <!-- [indeterminate]="indeterminate" -->
+        </th>
         }
         @for (col of columns; track col) {
-          <th (click)="sortBy(col.sortKey)">
-            {{ col.header }}
-            @if (currentSortField === col.sortKey) {
-              <span class="inline-block">
-                <i
-                  class="pi text-xs"
-                  [ngClass]="{
+        <th (click)="sortBy(col.sortKey)">
+          {{ col.header }}
+          @if (currentSortField === col.sortKey) {
+          <span class="inline-block">
+            <i class="pi text-xs" [ngClass]="{
                     'pi-sort-amount-up': sortDirection === 'asc',
                     'pi-sort-amount-down': sortDirection === 'desc',
-                  }"
-                ></i>
-              </span>
-            } @else {
-              @if (col.sortKey) {
-                <span class="order-icon">
-                  <i class="pi pi-sort-amount-up text-xs"></i>
-                </span>
-              }
-            }
-          </th>
+                  }"></i>
+          </span>
+          } @else {
+          @if (col.sortKey) {
+          <span class="order-icon">
+            <i class="pi pi-sort-amount-up text-xs"></i>
+          </span>
+          }
+          }
+        </th>
         }
       </tr>
     </thead>
     <tbody>
       <!-- Skeleton loading rows -->
       @if (loading) {
-        @for (i of [1, 2, 3, 4, 5]; track i) {
-          <tr>
-            @if (selectable) {
-              <td>
-                <p-skeleton width="20px" height="20px" shape="square"></p-skeleton>
-              </td>
-            }
-            @for (col of columns; track col) {
-              <td>
-                @if ($last) {
-                  <p-skeleton width="20px" height="20px" shape="circle"></p-skeleton>
-                } @else {
-                  <p-skeleton width="100%" height="20px"></p-skeleton>
-                }
-              </td>
-            }
-          </tr>
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+      <tr>
+        @if (selectable) {
+        <td>
+          <p-skeleton width="20px" height="20px" shape="square"></p-skeleton>
+        </td>
         }
+        @for (col of columns; track col) {
+        <td>
+          @if ($last) {
+          <p-skeleton width="20px" height="20px" shape="circle"></p-skeleton>
+          } @else {
+          <p-skeleton width="100%" height="20px"></p-skeleton>
+          }
+        </td>
+        }
+      </tr>
+      }
       } @else {
-        @for (item of data; track item; let index = $index) {
-          <tr (click)="viewDetails(item)" [ngClass]="{ canceled: !!item?.isCancel }">
-            @if (selectable) {
-              <td>
-                <input
-                  type="checkbox"
-                  class="custom-checkbox"
-                  [(ngModel)]="item.selected"
-                  (change)="updateSelection()"
-                  (click)="onCheckboxClick($event, item)"
-                  [disabled]="!isUpdateProgressVisible"
-                />
-              </td>
-            }
-            @for (col of columns; track col) {
-              <td>
-                @if (col.isNested && col.nestedFields?.length) {
-                  <!-- Handle nested fields -->
-                  @for (nestedField of col.nestedFields; track nestedField) {
-                    <div>
-                      <span>
-                        @if (col.pipe) {
-                          {{ applyPipe(item[nestedField], col.pipe, col.pipeParams) || '-' }}
-                        } @else {
-                          @if (col.field === 'index') {
-                            {{ index + 1 }}
-                          } @else {
-                            {{ col.field && item[col.field] }}
-                          }
-                          {{ item[nestedField] }}
-                        }
-                      </span>
-                    </div>
-                  }
-                } @else {
-                  @if (status) {
-                    <div>
-                      @if (col.field && col.statusField) {
-                        <span [ngClass]="getStatusClass(item[col.field])">
-                          {{ item[col.field] || '-' }}
-                        </span>
-                      }
-                    </div>
-                  }
-                  @if (col.field && !col.statusField) {
-                    <span>
-                      @if (col.pipe) {
-                        {{ applyPipe(item[col.field], col.pipe, col.pipeParams) || '-' }}
-                      } @else {
-                        @if (col.field === 'index') {
-                          {{ index + 1 }}
-                        } @else {
-                          @if (col.isHtml) {
-                            <span
-                              class="w-18rem block overflow-hidden text-overflow-ellipsis white-space-nowrap"
-                            >
-                              {{ item[col.field]?.toLowerCase()  }}
-                            </span>
-                          } @else {
-                            {{ item[col.field] }}
-                          }
-                        }
-                      }
-                    </span>
-                  }
-                }
-                @if (col.isAction) {
-                  <!-- Render action column -->
-                  <p-menu
-                    #menu
-                    [model]="customAction || actions"
-                    popup="true"
-                    [appendTo]="'body'"
-                    [style]="{ 'font-size': '14px' }"
-                  ></p-menu>
-                  <i
-                    *ngIf="shouldShowActionIcon(item)"
-                    class="pi pi-ellipsis-v"
-                    (click)="menu.toggle($event); emitSelectedItem(item); $event.stopPropagation()"
-                  ></i>
-                }
-                @if (col.isSwitch) {
-                  <!-- Render switch column -->
-                  <p-inputSwitch
-                    [(ngModel)]="item.isActive"
-                    (onChange)="toggleSwitch($event, item)"
-                    (click)="$event.stopPropagation()"
-                    [disabled]="!isUpdateProgressVisible"
-                  />
-                }
-                @if (col.isDropdown) {
-                  <!-- Render dropdown -->
-                  <p-dropdown
-                    [(ngModel)]="item.selectedOption"
-                    [options]="col.dropdownOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    (onChange)="onDropdownValueChange($event.value, item)"
-                    placeholder="Select"
-                    appendTo="body"
-                    class="small-dropdown"
-                    [disabled]="!isUpdateProgressVisible"
-                  ></p-dropdown>
-                }
-                @if (col.isDownload && col.field && item[col.field]) {
-                  <a
-                    [href]="item[col.field]"
-                    download
-                    target="_blank"
-                    class="text-primary underline"
-                    (click)="$event.stopPropagation()"
-                  >
-                    <i class="pi pi-download mr-1"></i>
-                  </a>
-                }
-
-                @if (col.isLink) {
-                  <a type="button" class="link-button" (click)="handleLinkClick(item)">
-                    @if (item.type === 'add') {
-                      <i class="pi pi-plus"></i> Add Details
-                    } @else {
-                      <i class="pi pi-eye"></i> View Details
-                    }
-                  </a>
-                }
-              </td>
-            }
-          </tr>
-        } @empty {
-          <td [colSpan]="columns.length + 1" class="text-center">No Data Found</td>
+      @for (item of data; track item; let index = $index) {
+      <tr (click)="viewDetails(item)" [ngClass]="{ canceled: !!item?.isCancel }">
+        @if (selectable) {
+        <td>
+          <input type="checkbox" class="custom-checkbox" [(ngModel)]="item.selected" (change)="updateSelection()"
+            (click)="onCheckboxClick($event, item)" [disabled]="!isUpdateProgressVisible" />
+        </td>
         }
+        @for (col of columns; track col) {
+        <td>
+          @if (col.isNested && col.nestedFields?.length) {
+          <!-- Handle nested fields -->
+          @for (nestedField of col.nestedFields; track nestedField) {
+          <div>
+            <span>
+              @if (col.pipe) {
+              {{ applyPipe(item[nestedField], col.pipe, col.pipeParams) || '-' }}
+              } @else {
+              @if (col.field === 'index') {
+              {{ index + 1 }}
+              } @else {
+              {{ col.field && item[col.field] }}
+              }
+              {{ item[nestedField] }}
+              }
+            </span>
+          </div>
+          }
+          } @else {
+          @if (status) {
+          <div>
+            @if (col.field && col.statusField) {
+            <span [ngClass]="getStatusClass(item[col.field])">
+              {{ item[col.field] || '-' }}
+            </span>
+            }
+          </div>
+          }
+          @if (col.field && !col.statusField) {
+          <span>
+            @if (col.pipe) {
+            {{ applyPipe(item[col.field], col.pipe, col.pipeParams) || '-' }}
+            } @else {
+            @if (col.field === 'index') {
+            {{ index + 1 }}
+            } @else {
+            @if (col.isHtml) {
+            <span class="w-18rem block overflow-hidden text-overflow-ellipsis white-space-nowrap">
+              {{ item[col.field]?.toLowerCase() }}
+            </span>
+            } @else {
+            {{ item[col.field] }}
+            }
+            }
+            }
+          </span>
+          }
+          }
+          @if (col.isAction) {
+          <!-- Render action column -->
+          <p-menu #menu [model]="customAction || actions" popup="true" [appendTo]="'body'"
+            [style]="{ 'font-size': '14px' }"></p-menu>
+          <i *ngIf="shouldShowActionIcon(item)" class="pi pi-ellipsis-v"
+            (click)="menu.toggle($event); emitSelectedItem(item); $event.stopPropagation()"></i>
+          }
+          @if (col.isSwitch) {
+          <!-- Render switch column -->
+          <p-inputSwitch [(ngModel)]="item.isActive" (onChange)="toggleSwitch($event, item)"
+            (click)="$event.stopPropagation()" [disabled]="!isUpdateProgressVisible" />
+          }
+          @if (col.isDropdown) {
+          <!-- Render dropdown -->
+          <p-dropdown [(ngModel)]="item.selectedOption" [options]="col.dropdownOptions" optionLabel="label"
+            optionValue="value" (onChange)="onDropdownValueChange($event.value, item)" placeholder="Select"
+            appendTo="body" class="small-dropdown" [disabled]="!isUpdateProgressVisible"></p-dropdown>
+          }
+          @if (col.isDownload && col.field && item[col.field]) {
+          <a [href]="item[col.field]" download target="_blank" class="text-primary underline"
+            (click)="$event.stopPropagation()">
+            <i class="pi pi-download mr-1"></i>
+          </a>
+          }
+
+          @if (col.isLink) {
+          <a type="button" class="link-button" (click)="handleLinkClick(item)">
+            @if (item.type === 'add') {
+            <i class="pi pi-plus"></i> Add Details
+            } @else {
+            <i class="pi pi-eye"></i> View Details
+            }
+          </a>
+          }
+
+          @if (col.deleteActions) {
+          <!-- Render switch column -->
+           @if(index === data.length - 1){
+            <button pButton icon="pi pi-trash" (click)="deleteRow(item)" class="p-button-rounded p-button-danger p-button-text"
+            >
+            </button>
+           }
+       
+          }
+        </td>
+        }
+      </tr>
+      } @empty {
+      <td [colSpan]="columns.length + 1" class="text-center">No Data Found</td>
+      }
       }
     </tbody>
   </table>
