@@ -617,12 +617,12 @@
             </div>
 
             <div class="field col-12 md:col-2">
-              <div class="flex flex-column align-items-start gap-2">
+              <div class="flex flex-column align-items-start mt-4">
                 <button
                   pButton
                   class="tm-primary-outline"
                   [outlined]="true"
-                  [label]="isEditingAuthority ? 'Update' : 'Adds'"
+                  [label]="isEditingAuthority ? 'Update' : 'Add'"
                   [icon]="'pi ' + (isEditingAuthority ? 'pi-check' : 'pi-plus')"
                   severity="secondary"
                   (click)="onAddSanctioning()"
@@ -630,7 +630,7 @@
                 @if (isEditingAuthority) {
                   <button
                     pButton
-                    class="tm-primary-outline"
+                    class="tm-primary-outline mt-4"
                     [outlined]="true"
                     label="Cancel"
                     icon="pi pi-times"
@@ -649,7 +649,7 @@
           [selectable]="false"
           [status]="false"
           (onDelete)="deleteAuthority($event)"
-          (onEdit)="editAuthority($event)"
+          (onEdit)="editAuthority($event);"
           [customAction]="actions"
           >                       
         </app-tm-table>        

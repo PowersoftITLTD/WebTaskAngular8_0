@@ -31,7 +31,7 @@ export interface TableColumn {
   styleUrls: ['./tm-table.component.scss'],
   providers: [DatePipe],
 })
-export class TmTableComponent implements OnChanges {
+export class TmTableComponent  { //implements OnChanges
   @Input() columns: any[] = [];
   @Input() data: any[] = [];
   @Input() selectable: boolean = false;
@@ -93,12 +93,12 @@ export class TmTableComponent implements OnChanges {
    // console.log('Data lul: ', this.data)
   }
 
-   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Changes: ', changes);
-    if (changes['data'] && this.columns?.length) {
-        console.log('columns :', this.columns)
-    }
-  }
+  //  ngOnChanges(changes: SimpleChanges): void {
+  //   // console.log('Changes: ', changes);
+  //   if (changes['data'] && this.columns?.length) {
+  //       // console.log('columns :', this.columns)
+  //   }
+  // }
 
   applyPipe(value: any, pipe?: string, pipeParams?: any): any {
     if (!pipe) return value;

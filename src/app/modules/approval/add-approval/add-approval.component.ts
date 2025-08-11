@@ -45,13 +45,13 @@ export class AddApprovalComponent {
   levelTableData: any[] = [];
 
 
- selectedSanctioningAuthority: any;
+  selectedSanctioningAuthority: any;
   currentSanctioningLevel: any;
   currentSanctioningDepartment: any;
   currentSanctioningMode: any;
 
-  startDate:any;
-  endDate:any;
+  startDate: any;
+  endDate: any;
 
   private isCheckValueCalled: boolean = false;
 
@@ -59,7 +59,7 @@ export class AddApprovalComponent {
 
   outcomeCategories: any = [];
   outcomeTableData: any = [];
-  checkListTableData:any = [];//{ srNo: 1, documentCategory: 'Land Related', documentName: 'Deed' }
+  checkListTableData: any = [];//{ srNo: 1, documentCategory: 'Land Related', documentName: 'Deed' }
 
   checkListCategories: any = [];
   department: any = [];
@@ -121,6 +121,7 @@ export class AddApprovalComponent {
   @ViewChild('multiSelect') multiSelect!: MultiSelect;
   @Input() isSubTask: boolean = false;
   @Input() parentTaskData: any;
+  departmentList: any;
 
   onSidebarHide() {
     this.sidebarHide.emit();
@@ -329,20 +330,20 @@ export class AddApprovalComponent {
 
           // Create a new row with the necessary controls
           const newRow = this.fb.group({
-            abbrivation: [''],
-            shorT_DESCRIPTION: [''],
-            sanctioN_DEPARTMENT: [''],
-            nO_DAYS_REQUIRED: [1],
-            authoritY_DEPARTMENT: [''],
-            enD_RESULT_DOC: [''],
-            subtasK_MKEY: [''],
+            abbrivation: [null],
+            shorT_DESCRIPTION: [null],
+            sanctioN_DEPARTMENT: [null],
+            nO_DAYS_REQUIRED: [null],
+            authoritY_DEPARTMENT: [null],
+            enD_RESULT_DOC: [null],
+            subtasK_MKEY: [null],
             subTaskTags: [tagsString],
             sequentialNo: [rows.length + 1],
           });
 
           rows.push(newRow);
 
-
+          console.log('Adding row from here: ', rows)
           const data = gerAbbrRelData.value[0]?.Data;
 
           // console.log('data newRow.value: ', data)
@@ -438,6 +439,7 @@ export class AddApprovalComponent {
           nO_DAYS_REQUIRED: matchedItem.Days_Requierd,
           authoritY_DEPARTMENT: matchedItem.Authority_Dept,
           enD_RESULT_DOC: matchedItem.End_Result_Doc,
+          subtasK_MKEY: matchedItem.Mkey
         };
 
         // Update the FormArray row too
@@ -451,6 +453,7 @@ export class AddApprovalComponent {
           nO_DAYS_REQUIRED: matchedItem.Days_Requierd,
           authoritY_DEPARTMENT: matchedItem.Authority_Dept,
           enD_RESULT_DOC: matchedItem.End_Result_Doc,
+          subtasK_MKEY: matchedItem.Mkey
         });
       }
     }
@@ -459,6 +462,15 @@ export class AddApprovalComponent {
 
   removeRow(index: number) {
     this.authorityTableData.splice(index, 1);
+    const rows = this.projectForm.get('rows') as FormArray;
+
+    if (rows.length > 0) {
+      rows.removeAt(index);
+
+      this.updateSequentialNumbers();
+    } else {
+      console.warn('No rows to remove');
+    }
   }
 
 
@@ -518,23 +530,23 @@ export class AddApprovalComponent {
   }
 
 
-    columns: TableColumn[] = [
-        { header: 'Task', field: 'task', isNested: false, sortKey: 'task' },
-        { header: 'Assignee', field: 'assignee', isNested: false, sortKey: 'assignee' },
-        { header: 'Status', field: 'status', statusField: true, sortKey: 'status' },
-        {
-          header: 'Due Date',
-          field: 'dueDate',
-          pipe: 'date',
-          pipeParams: 'dd MMM yyyy',
-          sortKey: 'dueDate',
-        },
-        { header: 'Priority', field: 'priority', isNested: false, sortKey: 'priority' },
-        { header: 'Files', field: 'files', isNested: false },
-        { header: 'Tags', field: 'tags', isNested: false },
-        { header: 'Summary', field: 'summary', isNested: false },
-        { header: 'Actions', isAction: true },
-      ];
+  columns: TableColumn[] = [
+    { header: 'Task', field: 'task', isNested: false, sortKey: 'task' },
+    { header: 'Assignee', field: 'assignee', isNested: false, sortKey: 'assignee' },
+    { header: 'Status', field: 'status', statusField: true, sortKey: 'status' },
+    {
+      header: 'Due Date',
+      field: 'dueDate',
+      pipe: 'date',
+      pipeParams: 'dd MMM yyyy',
+      sortKey: 'dueDate',
+    },
+    { header: 'Priority', field: 'priority', isNested: false, sortKey: 'priority' },
+    { header: 'Files', field: 'files', isNested: false },
+    { header: 'Tags', field: 'tags', isNested: false },
+    { header: 'Summary', field: 'summary', isNested: false },
+    { header: 'Actions', isAction: true },
+  ];
 
 
   authorityTableColumns: any = [
@@ -570,16 +582,17 @@ export class AddApprovalComponent {
     { header: '', field: 'actions', type: 'actions' }
   ];
 
-  authorityTableColumns_2:any = [
+  authorityTableColumns_2: any = [
     { field: 'index', header: 'Serial No.' },
+    { field: 'Level', header:'Level'},
     { field: 'Sanctioning_Department', header: 'Description' },
     { field: 'Type_Desc', header: 'Department' },
-    { field: 'Type_Code', header: 'Code' },
-    { field:'Start_date', header:'Start Date'},
-    { field:'End_date', header:'End Date'},
+    // { field: 'Type_Code', header: 'Code' },
+    { field: 'Start_date', header: 'Start Date' },
+    { field: 'End_date', header: 'End Date' },
     { field: 'Mode', header: 'Active', isSwitch: true },
-    { field: 'Action', header: 'Actions', deleteActions:true }
-  
+    { field: 'Action', header: 'Actions', deleteActions: true }
+
   ];
 
   // Checklist
@@ -603,7 +616,7 @@ export class AddApprovalComponent {
     this.selectedCompletionDate = this.selectedDate;
   }
 
-    onAuthoritySave() {
+  onAuthoritySave() {
     if (this.isEditingAuthority) {
       // If editing, we've already removed the old version
       this.isEditingAuthority = false;
@@ -771,7 +784,7 @@ export class AddApprovalComponent {
             Department_Type: item.Department_Type,
             Mkey: item.Mkey
           }));
-          //console.log('Department list: ', formatDept)
+          console.log('Department list: ', formatDept)
           this.department = cloneDeep(formatDept);
         } else {
           console.warn('Unexpected response format for Doc-Type_NT', res);
@@ -1019,12 +1032,12 @@ export class AddApprovalComponent {
       );
 
       // Optional: Reset srNo after removal
-      this.checkListTableData.forEach((data:any, index:any) => {
+      this.checkListTableData.forEach((data: any, index: any) => {
         data.srNo = index + 1;
       });
     }
 
-   // console.log('Updated Table checkListTableData:', this.checkListTableData);
+    // console.log('Updated Table checkListTableData:', this.checkListTableData);
   }
 
   updateOutcomeTableData(item: any) {
@@ -1047,9 +1060,7 @@ export class AddApprovalComponent {
         (data: any) => data.Doc_Type_Mkey !== item.Doc_Type_Mkey,
       );
     }
-
     //console.log('Updated Table outcomeTableData:', this.outcomeTableData);
-
   }
 
   onTableSave(type: 'checklist' | 'outcome') {
@@ -1084,12 +1095,12 @@ export class AddApprovalComponent {
     };
 
 
-    // console.log('newEntry: ', newEntry);
+     console.log('newEntry: ', newEntry);
     // console.log('this.levelTableData: ',  this.levelTableData);
 
     this.levelTableData = [...this.levelTableData, newEntry];
 
-   // console.log('levelTableData: ', this.levelTableData);
+    // console.log('levelTableData: ', this.levelTableData);
 
     // Optional: Clear form after adding
     // this.formData = {
@@ -1103,7 +1114,7 @@ export class AddApprovalComponent {
   }
 
 
-  
+
   // onCreate() {
 
   //   const created_by = this.authData?.Session_User_Id;
@@ -1194,28 +1205,26 @@ export class AddApprovalComponent {
 
 
   onCreate() {
-  const {
-    building,
-    standard,
-    authority,
-    projectAbbreviation,
-    shortDescription,
-    longDescription,
-    department,
-    Assigned_To,
-    jobRole,
-    tags,
-    noOfDays,
-    sequenceNo
-  } = this.projectForm.value;
+    const {
+      building,
+      standard,
+      authority,
+      projectAbbreviation,
+      shortDescription,
+      longDescription,
+      department,
+      Assigned_To,
+      jobRole,
+      tags,
+      noOfDays,
+      sequenceNo
+    } = this.projectForm.value;
 
-  const created_by = this.authData?.Session_User_Id;
-  const Business_Group_ID = this.authData?.Business_Group_Id;
+    const created_by = this.authData?.Session_User_Id;
+    const Business_Group_ID = this.authData?.Business_Group_Id;
 
-   const formArrayVal: FormArray = (this.projectForm.get('rows') as FormArray);
+    const formArrayVal: FormArray = (this.projectForm.get('rows') as FormArray);
     const val_of_formArr = formArrayVal.value;
-
-     console.log('val_of_formArr', val_of_formArr);
 
     const subTasks = val_of_formArr
       .filter((row: any) => {
@@ -1231,49 +1240,66 @@ export class AddApprovalComponent {
         };
       });
 
-      console.log('subTasks: ', subTasks)
 
-  const payload: TemplateInterface  = {
-    Mkey: 0,
-    Building_Type: building,
-    Building_Standard: standard,
-    Statutory_Authority: authority,
-    Main_Abbr: projectAbbreviation,
-    Short_Description: shortDescription,
-    Long_Description: longDescription,
-    Authority_Department: department,
-    Resposible_Emp_Mkey: Assigned_To,
-    Job_Role: jobRole,
-    Tags: this.formatTags(tags),
-    Days_Requierd: noOfDays,
-    Seq_Order: sequenceNo,
-    Created_By: created_by,
-    End_Result_Doc_Lst: this.reduceDocumentList(this.outcomeTableData),
-    Checklist_Doc_Lst: this.reduceDocumentList(this.checkListTableData),
-    Sanctioning_Department_List: [],
-    Subtask_List: subTasks || [],
-    Session_User_Id: created_by,
-    Business_Group_Id: Business_Group_ID
-  };
+    //   const formArrayVal_new: FormArray = (this.projectForm.get('rows_new') as FormArray);
+    // const val_of_formArr_new = formArrayVal_new.value;
 
-  const url = 'Approval-Template-Insert-Update-NT'
+    const subAuth = this.levelTableData
+      .map((row: any) => {
+        return {
+          LEVEL: row.Level.toString(),
+          SANCTIONING_DEPARTMENT: row.Sanctioning_Department,
+          SANCTIONING_AUTHORITY: row.sanctioningAuth,
+          START_DATE: row.Start_date,
+          END_DATE: row.End_date ? row.End_date : null
+        }
+      })
 
-   console.log('Check payload', payload);
-  // this.apiService.postDetails(url, payload, false, false, true).subscribe({
-  //     next:(res)=>{
-  //       console.log('res ',res)
-  //     }
-  //   } 
-  // )
-    
-  
+      console.log('Adding Sanctioning Authorities: ', this.levelTableData);
 
-  // console.log('Updated Table outcomeTableData:', this.outcomeTableData);
-  // console.log('Updated Table checkListTableData:', this.checkListTableData);
-  // console.log('Check payload', payload);
-}
+      console.log('subAuth: ', subAuth)
 
- onAuthorityCancel() {
+    const payload: TemplateInterface = {
+      Mkey: 0,
+      Building_Type: building,
+      Building_Standard: standard,
+      Statutory_Authority: authority,
+      Main_Abbr: projectAbbreviation,
+      Short_Description: shortDescription,
+      Long_Description: longDescription,
+      Authority_Department: department,
+      Resposible_Emp_Mkey: Assigned_To,
+      Job_Role: jobRole,
+      Tags: this.formatTags(tags),
+      Days_Requierd: noOfDays,
+      Seq_Order: sequenceNo,
+      Created_By: created_by,
+      End_Result_Doc_Lst: this.reduceDocumentList(this.outcomeTableData),
+      Checklist_Doc_Lst: this.reduceDocumentList(this.checkListTableData),
+      Sanctioning_Department_List: [],
+      Subtask_List: subTasks || [],
+      Session_User_Id: created_by,
+      Business_Group_Id: Business_Group_ID
+    };
+
+    const url = 'Approval-Template-Insert-Update-NT'
+
+    console.log('Check payload', payload);
+    // this.apiService.postDetails(url, payload, false, false, true).subscribe({
+    //     next:(res)=>{
+    //       console.log('res ',res)
+    //     }
+    //   } 
+    // )
+
+
+
+    // console.log('Updated Table outcomeTableData:', this.outcomeTableData);
+    // console.log('Updated Table checkListTableData:', this.checkListTableData);
+    // console.log('Check payload', payload);
+  }
+
+  onAuthorityCancel() {
     if (this.isEditingAuthority) {
       // Restore the original item if editing was cancelled
       const originalItem = this.tempAuthorityTableData.find(
@@ -1293,30 +1319,126 @@ export class AddApprovalComponent {
   }
 
 
+  onAbbrChange(event: Event, rowForm: FormGroup, rowIndex?: number | any) {
+    const selectElement = event.target as HTMLSelectElement; // Cast to HTMLSelectElement
+    const selectedAbbr = selectElement.value; // Now TypeScript knows 'value' exists
+
+    //console.log('selectedAbbr', selectedAbbr)
+    rowForm.get('abbrivation')?.setValue(selectedAbbr);
+
+    const selectedRow = this.getRelAbbr.find(r => r.maiN_ABBR === selectedAbbr);
+    console.log('selectedRow: ', rowForm);
+    const header_no_of_days = Number(this.projectForm.get('noOfDays')?.value);
+    const subtas_no_of_days = selectedRow?.dayS_REQUIERD || 0;
+
+    const formArray = this.projectForm.get('rows') as FormArray;
+
+    // Calculate total days required across all rows
+    let totalDaysRequired = formArray.controls.reduce((sum, row) => {
+      return sum + (row.get('nO_DAYS_REQUIRED')?.value || 0);
+    }, 0);
+
+    totalDaysRequired += subtas_no_of_days; // Add newly selected row's days
+
+    console.log('Total Days Required: ', totalDaysRequired);
+    console.log('header_no_of_days: ', header_no_of_days)
+
+    if (totalDaysRequired >= header_no_of_days) {
+      if (!confirm(`Days are exceeding as per header which is ${header_no_of_days} Days. Do you still want to proceed?`)) {
+        formArray.removeAt(formArray.length - 1); // Remove the last added row
+        return;
+      }
+    }
+
+    const abbrivation = this.projectForm.get('abbr')?.value;
 
 
 
-private formatTags(tagsValue: any): string {
-  if (!Array.isArray(tagsValue)) return '';
-  return tagsValue.map(tag => typeof tag === 'string' ? tag : tag.display || '').join(',');
-}
+    if (abbrivation === selectedAbbr) {
+      this.notificationService.error('Same approval cannot assign to itself');
+      formArray.removeAt(formArray.length - 1); // Remove the last added row
+      return;
+    } else if (abbrivation === '' || abbrivation === undefined || abbrivation === null) {
+      this.notificationService.error('Please enter the approval header abbrivation');
+      formArray.removeAt(formArray.length - 1); // Remove the last added row
+      return;
+    }
 
- 
+    console.log('ROW form: ', formArray.value)
 
-private reduceDocumentList(docList: any[]): { [key: string]: string } {
-  //console.log('docList: ', docList)
-  return docList.reduce((acc, item) => {
-    const { documentCategory, Doc_Type_Mkey } = item;
-    acc[documentCategory] = acc[documentCategory]
-      ? `${acc[documentCategory].trim()},${Doc_Type_Mkey}`
-      : `${Doc_Type_Mkey}`;
-    return acc;
-  }, {});
-}
+    const sublist_form_value = formArray.value
 
- editAuthority(event: any) {
-   // Store the original item in case of cancellation
+    const abbrivationSet = new Set();
+    let hasDuplicate = false;
+
+    sublist_form_value.forEach((val: any) => {
+      if (abbrivationSet.has(val.abbrivation)) {
+        hasDuplicate = true;
+      } else {
+        abbrivationSet.add(val.abbrivation);
+      }
+    });
+
+    if (hasDuplicate) {
+      this.notificationService.error("Record already exist");
+      formArray.removeAt(formArray.length - 1); // Remove the last added row
+      return;
+    }
+
+    const matchedDepartment = this.department.find((department: any) => department.mkey === selectedRow?.authoritY_DEPARTMENT);
+
+    console.log('matchedDepartment: ', matchedDepartment)
+    if (matchedDepartment) {
+      selectedRow.sanctioN_DEPARTMENT = matchedDepartment.typE_DESC;
+    } else {
+      console.log("Department not found");
+    }
+
+    if (selectedRow) {
+      rowForm.get('selectedAbbr')?.setValue(selectedRow.maiN_ABBR);
+      rowForm.get('shorT_DESCRIPTION')?.setValue(selectedRow.shorT_DESCRIPTION);
+      rowForm.get('sanctioN_DEPARTMENT')?.setValue(selectedRow.sanctioN_DEPARTMENT);
+      rowForm.get('nO_DAYS_REQUIRED')?.setValue(selectedRow.dayS_REQUIERD);
+      rowForm.get('enD_RESULT_DOC')?.setValue(selectedRow.enD_RESULT_DOC);
+      rowForm.get('authoritY_DEPARTMENT')?.setValue(selectedRow.abbR_SHORT_DESC);
+      rowForm.get('subtasK_MKEY')?.setValue(selectedRow.mkey);
+      rowForm.get('SUBTASK_TAGS')?.setValue(selectedRow.subTaskTags);
+    } else {
+      rowForm.get('selectedAbbr')?.setValue('');
+      rowForm.get('shorT_DESCRIPTION')?.setValue('');
+      rowForm.get('sanctioN_DEPARTMENT')?.setValue('');
+      rowForm.get('nO_DAYS_REQUIRED')?.setValue('');
+      rowForm.get('enD_RESULT_DOC')?.setValue('');
+      rowForm.get('authoritY_DEPARTMENT')?.setValue('');
+      rowForm.get('subtasK_MKEY')?.setValue('');
+      rowForm.get('SUBTASK_TAGS')?.setValue('');
+    }
+  }
+
+
+  private formatTags(tagsValue: any): string {
+    if (!Array.isArray(tagsValue)) return '';
+    return tagsValue.map(tag => typeof tag === 'string' ? tag : tag.display || '').join(',');
+  }
+
+
+
+  private reduceDocumentList(docList: any[]): { [key: string]: string } {
+    //console.log('docList: ', docList)
+    return docList.reduce((acc, item) => {
+      const { documentCategory, Doc_Type_Mkey } = item;
+      acc[documentCategory] = acc[documentCategory]
+        ? `${acc[documentCategory].trim()},${Doc_Type_Mkey}`
+        : `${Doc_Type_Mkey}`;
+      return acc;
+    }, {});
+  }
+
+  editAuthority(event: any) {
+    // Store the original item in case of cancellation
     const originalItem = this.authorityTableData.find((item: any) => item.Mkey === event.Mkey);
+
+    console.log('Check orignal item: ', originalItem)
 
     if (!originalItem) return;
 
@@ -1354,7 +1476,7 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
     this.showAuthority = false;
   }
 
-   cancelEditAuthority() {
+  cancelEditAuthority() {
     // Restore the original item
     const originalItem = this.tempAuthorityTableData.find(
       (item: any) => item.Mkey === this.editedAuthorityId,
@@ -1370,7 +1492,7 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
   }
 
 
-   private resetAuthorityForm() {
+  private resetAuthorityForm() {
     this.currentSanctioningLevel = null;
     this.selectedSanctioningAuthority = null;
     this.currentSanctioningDepartment = null;
@@ -1378,7 +1500,7 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
   }
 
 
- checkLevel(control: NgModel) {
+  checkLevel(control: NgModel) {
     const levelExist = this.authorityTableData.some(
       (data: any) => data.Level === control.control.value,
     );
@@ -1390,7 +1512,7 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
   }
 
 
-    onAddSanctioning() {
+  onAddSanctioning() {
     if (
       this.currentSanctioningLevel &&
       this.selectedSanctioningAuthority &&
@@ -1400,16 +1522,18 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
         ...this.selectedSanctioningAuthority,
         Level: this.currentSanctioningLevel,
         Sanctioning_Department: this.currentSanctioningDepartment,
-        Start_date:this.formatDate(this.startDate),
-        End_date:this.formatDate(this.endDate),        
+        Start_date: this.formatDate(this.startDate),
+        End_date: this.formatDate(this.endDate),
         isActive: this.currentSanctioningMode,
-        actions:true
+        actions: true
       };
 
       if (this.isEditingAuthority && this.editedAuthorityId) {
         // For edit, preserve the original Mkey if it exists
         authority.Mkey = this.editedAuthorityId;
       }
+
+      console.log('authority: ', authority)
 
       this.levelTableData.push(authority);
 
@@ -1428,7 +1552,7 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
     }
   }
 
-  formatDate(dateStr:any) {
+  formatDate(dateStr: any) {
     const date = new Date(dateStr);
     // Get components in desired format
     const year = date.getFullYear();
@@ -1437,18 +1561,27 @@ private reduceDocumentList(docList: any[]): { [key: string]: string } {
     // const hours = String(date.getHours()).padStart(2, '0');
     // const minutes = String(date.getMinutes()).padStart(2, '0');
     // const seconds = String(date.getSeconds()).padStart(2, '0');
-    
+
     return `${year}-${month}-${day}`; //T${hours}:${minutes}:${seconds}
-}
-
-deleteAuthority(rowData: any) {
-  const index = this.levelTableData.indexOf(rowData);
-  if (index !== -1) {
-    this.levelTableData.splice(index, 1);
-    console.log('Row deleted:', rowData);
   }
-}
 
+  deleteAuthority(rowData: any) {
+    const index = this.levelTableData.indexOf(rowData);
+
+    if (index !== -1) {
+      this.levelTableData.splice(index, 1);
+      console.log('Row deleted:', rowData);
+    }
+  }
+
+
+  updateSequentialNumbers() {
+    const rows = this.projectForm.get('rows') as FormArray;
+    rows.controls.forEach((row, index) => {
+      // Update the sequential number after a row is removed
+      row.get('sequentialNo')?.setValue(index + 1); // Starts from 1
+    });
+  }
 
   patchForm() { }
 }
