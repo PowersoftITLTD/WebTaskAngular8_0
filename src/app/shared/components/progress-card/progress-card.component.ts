@@ -48,6 +48,7 @@ export class ProgressCardComponent {
   ) {}
 
   ngOnInit() {
+    console.log('check data: ', this.data)
     this.store.select(storedDetails).subscribe((data) => {
       this.authData = data;
     });

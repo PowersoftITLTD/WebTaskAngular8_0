@@ -1,33 +1,60 @@
-<!-- <p>approval-list works!</p> -->
-<!-- @if (sidebarVisible) {
-  <div style="position: relative; z-index: 1;"> -->
+<div class="flex justify-content-between mb-3">
+   <app-tm-tabs
+    [tabs]="tabList"
+    [counts]="tabCounts"
+    (tabChanged)="onTabChange($event)"
+    [activeTab]="currentTab"
+    [showCount]="false"
+    >
+  </app-tm-tabs>
+</div>
+
+  <div class="card flex justify-content-center">
+
+  </div>
     <app-add-approval 
       [sidebarVisible]="sidebarVisible"
       (sidebarHide)="sidebarVisible = false">
     </app-add-approval>
-  <!-- </div>
-} -->
+
    
 
 
- <!-- <app-add-approval [visible]="sidebarVisible" (visibleChange)="sidebarVisible = $event"></app-add-approval> -->
 
-<div class="card flex justify-content-center">
+<!-- <div class="card flex justify-content-center">
     <p-breadcrumb />
-</div>
+</div> -->
 
 <div class="container">
 
     <div class="mb-3">
         <app-tm-advance-search 
         [showButton]="true"
-        [buttonLabel]="'Add New Approval'"
+        [buttonLabel]="currentTab === 'Approval Template' ? 'Add Template' : currentTab"
         (onButtonClick)="addApproval()">
         </app-tm-advance-search>
     </div>
 
+
+    @if (currentTab === 'Approval Template') {
+      @for (dataObj of templateData; track $index) {
+        <div class="mb-2">
+          <app-approvals-progress-card
+            [data]="dataObj"           
+          ></app-approvals-progress-card>
+        </div>
+      }
+      @if (isLoading) {
+        @for (_ of [1, 2, 3]; track $index) {
+          <div class="mb-2">
+            <app-approvals-progress-card [isLoading]="true"></app-approvals-progress-card>
+          </div>
+        }
+      }
+    }
+<!-- 
     <div class="mb-3">
         <app-progress-card [data]="data"></app-progress-card>
-    </div>
+    </div> -->
 
 </div>

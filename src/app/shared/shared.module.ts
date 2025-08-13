@@ -44,6 +44,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { ListboxModule } from 'primeng/listbox';
 import { ApprovalAuthorityTableComponent } from './components/approval-authority-table/approval-authority-table.component';
+import { ApprovalsProgressCardComponent } from './components/approvals-progress-card/approvals-progress-card.component';
 
 
 @NgModule({
@@ -67,6 +68,7 @@ import { ApprovalAuthorityTableComponent } from './components/approval-authority
     ShortNamePipe,
     ApprovalTableComponent,
     ApprovalAuthorityTableComponent,
+    ApprovalsProgressCardComponent,
     
   ],
   imports: [
@@ -127,7 +129,8 @@ import { ApprovalAuthorityTableComponent } from './components/approval-authority
     DropdownModule,
     ButtonModule,
     ListboxModule,
-    ApprovalAuthorityTableComponent
+    ApprovalAuthorityTableComponent,
+    ApprovalsProgressCardComponent
   ],
 })
 export class SharedModule {}

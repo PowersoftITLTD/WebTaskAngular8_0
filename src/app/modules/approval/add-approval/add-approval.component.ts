@@ -784,7 +784,7 @@ export class AddApprovalComponent {
             Department_Type: item.Department_Type,
             Mkey: item.Mkey
           }));
-          console.log('Department list: ', formatDept)
+         // console.log('Department list: ', formatDept)
           this.department = cloneDeep(formatDept);
         } else {
           console.warn('Unexpected response format for Doc-Type_NT', res);
@@ -1249,7 +1249,7 @@ export class AddApprovalComponent {
         return {
           LEVEL: row.Level.toString(),
           SANCTIONING_DEPARTMENT: row.Sanctioning_Department,
-          SANCTIONING_AUTHORITY: row.sanctioningAuth,
+          SANCTIONING_AUTHORITY: row.Type_Desc,
           START_DATE: row.Start_date,
           END_DATE: row.End_date ? row.End_date : null
         }
@@ -1276,7 +1276,7 @@ export class AddApprovalComponent {
       Created_By: created_by,
       End_Result_Doc_Lst: this.reduceDocumentList(this.outcomeTableData),
       Checklist_Doc_Lst: this.reduceDocumentList(this.checkListTableData),
-      Sanctioning_Department_List: [],
+      Sanctioning_Department_List:subAuth || [],
       Subtask_List: subTasks || [],
       Session_User_Id: created_by,
       Business_Group_Id: Business_Group_ID
@@ -1285,12 +1285,12 @@ export class AddApprovalComponent {
     const url = 'Approval-Template-Insert-Update-NT'
 
     console.log('Check payload', payload);
-    // this.apiService.postDetails(url, payload, false, false, true).subscribe({
-    //     next:(res)=>{
-    //       console.log('res ',res)
-    //     }
-    //   } 
-    // )
+    this.apiService.postDetails(url, payload, false, false, true).subscribe({
+        next:(res)=>{
+          console.log('res ',res)
+        }
+      } 
+    )
 
 
 
@@ -1492,12 +1492,12 @@ export class AddApprovalComponent {
   }
 
 
-  private resetAuthorityForm() {
-    this.currentSanctioningLevel = null;
-    this.selectedSanctioningAuthority = null;
-    this.currentSanctioningDepartment = null;
-    this.currentSanctioningMode = null;
-  }
+    private resetAuthorityForm() {
+      this.currentSanctioningLevel = null;
+      this.selectedSanctioningAuthority = null;
+      this.currentSanctioningDepartment = null;
+      this.currentSanctioningMode = null;
+    }
 
 
   checkLevel(control: NgModel) {
